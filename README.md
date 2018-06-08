@@ -102,3 +102,12 @@ chocolate-doom -merge aoddoom1.wad -deh aoddoom1.deh  (Army of Darkness Doom)
 
  * Please send any feedback, questions or suggestions to
    chocolate-doom-dev-list@chocolate-doom.org. Thanks!
+
+## Nintendo Switch Port - Compiling
+
+* Install devkitpro and install SDL2 and SDL Mixer
+* Build Doom with 		make -f makefile.doom
+* Build Heretic with 	make -f makefile.heretic
+* Build Hexen with 		make -f makefile.hexen
+* Build Strife with 	make -f makefile.heretic
+
