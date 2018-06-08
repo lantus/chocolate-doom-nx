@@ -1,0 +1,272 @@
+# Project: Heretic
+  
+ifeq ($(strip $(DEVKITPRO)),)
+$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
+endif
+  
+TOPDIR ?= $(CURDIR)
+include $(DEVKITPRO)/libnx/switch_rules
+export BUILD_EXEFS_SRC := build/exefs
+
+
+CC        = aarch64-none-elf-gcc
+OBJ       = obj/d_event.o obj/d_iwad.o obj/i_endoom.o obj/i_joystick.o obj/i_main.o obj/i_scale.o obj/i_system.o obj/i_timer.o obj/i_video.o obj/icon.o obj/m_argv.o obj/m_bbox.o obj/m_cheat.o obj/m_config.o obj/m_controls.o obj/m_fixed.o obj/m_misc.o obj/md5.o obj/memio.o obj/mus2mid.o obj/net_common.o obj/net_io.o obj/net_loop.o obj/net_packet.o obj/net_query.o obj/net_structrw.o obj/tables.o obj/v_video.o obj/w_checksum.o obj/w_file.o obj/w_file_stdc.o obj/w_main.o obj/w_merge.o obj/w_wad.o obj/z_zone.o obj/net_sdl.o obj/d_mode.o obj/i_amigasound.o obj/am_map.o obj/ct_chat.o obj/d_main.o obj/d_net.o obj/f_finale.o obj/g_game.o obj/in_lude.o obj/info.o obj/m_random.o obj/mn_menu.o obj/p_ceilng.o obj/p_doors.o obj/p_enemy.o obj/p_floor.o obj/p_inter.o obj/p_lights.o obj/p_map.o obj/p_maputl.o obj/p_mobj.o obj/p_plats.o obj/p_pspr.o obj/p_setup.o obj/p_sight.o obj/p_spec.o obj/p_switch.o obj/p_telept.o obj/p_tick.o obj/p_user.o obj/r_bsp.o obj/r_data.o obj/r_draw.o obj/r_main.o obj/r_plane.o obj/r_segs.o obj/r_things.o obj/s_sound.o obj/sb_bar.o obj/sounds.o obj/i_sound.o obj/i_prismamusic.o obj/i_camdmusic.o
+LINKOBJ   = obj/d_event.o obj/d_iwad.o obj/i_endoom.o obj/i_joystick.o obj/i_main.o obj/i_scale.o obj/i_system.o obj/i_timer.o obj/i_video.o obj/icon.o obj/m_argv.o obj/m_bbox.o obj/m_cheat.o obj/m_config.o obj/m_controls.o obj/m_fixed.o obj/m_misc.o obj/md5.o obj/memio.o obj/mus2mid.o obj/net_common.o obj/net_io.o obj/net_loop.o obj/net_packet.o obj/net_query.o obj/net_structrw.o obj/tables.o obj/v_video.o obj/w_checksum.o obj/w_file.o obj/w_file_stdc.o obj/w_main.o obj/w_merge.o obj/w_wad.o obj/z_zone.o obj/net_sdl.o obj/d_mode.o obj/i_amigasound.o obj/am_map.o obj/ct_chat.o obj/d_main.o obj/d_net.o obj/f_finale.o obj/g_game.o obj/in_lude.o obj/info.o obj/m_random.o obj/mn_menu.o obj/p_ceilng.o obj/p_doors.o obj/p_enemy.o obj/p_floor.o obj/p_inter.o obj/p_lights.o obj/p_map.o obj/p_maputl.o obj/p_mobj.o obj/p_plats.o obj/p_pspr.o obj/p_setup.o obj/p_sight.o obj/p_spec.o obj/p_switch.o obj/p_telept.o obj/p_tick.o obj/p_user.o obj/r_bsp.o obj/r_data.o obj/r_draw.o obj/r_main.o obj/r_plane.o obj/r_segs.o obj/r_things.o obj/s_sound.o obj/sb_bar.o obj/sounds.o obj/i_sound.o obj/i_prismamusic.o obj/i_camdmusic.o
+LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib -lSDL2 -lnx
+INCS      = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
+CXXINCS   = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
+BUILD	  =	build
+BIN       = release
+CXXFLAGS  = $(CXXINCS) $(DEFINES) -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -O3
+CFLAGS    = $(INCS) $(DEFINES)    -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -O3
+GPROF     = gprof.exe
+RM        = rm -f
+LINK      = aarch64-none-elf-gcc
+CPP		  = aarch64-none-elf-g++
+OUTPUT    = cannonball
+
+.PHONY: all all-before all-after clean clean-custom
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	$(RM) $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(LINK) $(LINKOBJ) -o "release/heretic.elf" $(LIBS)
+
+obj/d_event.o: $(GLOBALDEPS) d_event.c d_event.h doomtype.h
+	$(CC) -c d_event.c -o obj/d_event.o $(CFLAGS)
+
+obj/d_iwad.o: $(GLOBALDEPS) d_iwad.c deh_str.h doomfeatures.h doomkeys.h d_iwad.h d_mode.h doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h m_argv.h doomtype.h m_config.h m_misc.h doomtype.h w_wad.h doomtype.h w_file.h doomtype.h z_zone.h
+	$(CC) -c d_iwad.c -o obj/d_iwad.o $(CFLAGS)
+
+obj/i_endoom.o: $(GLOBALDEPS) i_endoom.c doomtype.h i_video.h doomtype.h
+	$(CC) -c i_endoom.c -o obj/i_endoom.o $(CFLAGS)
+
+obj/i_joystick.o: $(GLOBALDEPS) i_joystick.c doomtype.h d_event.h doomtype.h i_joystick.h m_config.h
+	$(CC) -c i_joystick.c -o obj/i_joystick.o $(CFLAGS)
+
+obj/i_main.o: $(GLOBALDEPS) i_main.c config.h doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h m_argv.h doomtype.h m_fixed.h
+	$(CC) -c i_main.c -o obj/i_main.o $(CFLAGS)
+
+obj/i_scale.o: $(GLOBALDEPS) i_scale.c doomtype.h i_video.h doomtype.h m_argv.h doomtype.h z_zone.h
+	$(CC) -c i_scale.c -o obj/i_scale.o $(CFLAGS)
+
+obj/i_system.o: $(GLOBALDEPS) i_system.c config.h deh_str.h doomfeatures.h doomtype.h m_argv.h doomtype.h m_config.h m_misc.h doomtype.h i_joystick.h i_sound.h doomtype.h i_timer.h i_video.h doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h w_wad.h doomtype.h w_file.h doomtype.h z_zone.h
+	$(CC) -c i_system.c -o obj/i_system.o $(CFLAGS)
+
+obj/i_timer.o: $(GLOBALDEPS) i_timer.c i_timer.h
+	$(CC) -c i_timer.c -o obj/i_timer.o $(CFLAGS)
+
+obj/i_video.o: $(GLOBALDEPS) i_video.c icon.c config.h deh_str.h doomfeatures.h doomtype.h doomkeys.h i_joystick.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h i_swap.h i_timer.h i_video.h doomtype.h i_scale.h doomtype.h m_argv.h doomtype.h m_config.h tables.h doomtype.h m_fixed.h v_video.h doomtype.h v_patch.h w_wad.h doomtype.h w_file.h doomtype.h z_zone.h amiga_mmu.h
+	$(CC) -c i_video.c -o obj/i_video.o $(CFLAGS)
+
+obj/icon.o: $(GLOBALDEPS) icon.c
+	$(CC) -c icon.c -o obj/icon.o $(CFLAGS)
+
+obj/m_argv.o: $(GLOBALDEPS) m_argv.c doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h m_misc.h doomtype.h
+	$(CC) -c m_argv.c -o obj/m_argv.o $(CFLAGS)
+
+obj/m_bbox.o: $(GLOBALDEPS) m_bbox.c m_bbox.h m_fixed.h
+	$(CC) -c m_bbox.c -o obj/m_bbox.o $(CFLAGS)
+
+obj/m_cheat.o: $(GLOBALDEPS) m_cheat.c doomtype.h m_cheat.h
+	$(CC) -c m_cheat.c -o obj/m_cheat.o $(CFLAGS)
+
+obj/m_config.o: $(GLOBALDEPS) m_config.c config.h doomtype.h doomkeys.h doomfeatures.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h m_argv.h doomtype.h m_misc.h doomtype.h z_zone.h
+	$(CC) -c m_config.c -o obj/m_config.o $(CFLAGS)
+
+obj/m_controls.o: $(GLOBALDEPS) m_controls.c doomtype.h doomkeys.h m_config.h
+	$(CC) -c m_controls.c -o obj/m_controls.o $(CFLAGS)
+
+obj/m_fixed.o: $(GLOBALDEPS) m_fixed.c doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h m_fixed.h
+	$(CC) -c m_fixed.c -o obj/m_fixed.o $(CFLAGS)
+
+obj/m_misc.o: $(GLOBALDEPS) m_misc.c doomtype.h deh_str.h doomfeatures.h i_swap.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h i_video.h doomtype.h m_misc.h doomtype.h v_video.h doomtype.h v_patch.h w_wad.h doomtype.h w_file.h doomtype.h z_zone.h
+	$(CC) -c m_misc.c -o obj/m_misc.o $(CFLAGS)
+
+obj/md5.o: $(GLOBALDEPS) md5.c doomtype.h i_swap.h md5.h doomtype.h
+	$(CC) -c md5.c -o obj/md5.o $(CFLAGS)
+
+obj/memio.o: $(GLOBALDEPS) memio.c memio.h z_zone.h
+	$(CC) -c memio.c -o obj/memio.o $(CFLAGS)
+
+obj/mus2mid.o: $(GLOBALDEPS) mus2mid.c doomtype.h i_swap.h memio.h mus2mid.h doomtype.h memio.h
+	$(CC) -c mus2mid.c -o obj/mus2mid.o $(CFLAGS)
+
+obj/net_common.o: $(GLOBALDEPS) net_common.c doomtype.h d_mode.h doomtype.h i_timer.h net_common.h d_mode.h net_defs.h doomtype.h d_ticcmd.h doomtype.h net_packet.h net_defs.h net_io.h net_defs.h net_packet.h
+	$(CC) -c net_common.c -o obj/net_common.o $(CFLAGS)
+
+obj/net_io.o: $(GLOBALDEPS) net_io.c i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h net_defs.h doomtype.h d_ticcmd.h net_io.h net_defs.h z_zone.h
+	$(CC) -c net_io.c -o obj/net_io.o $(CFLAGS)
+
+obj/net_loop.o: $(GLOBALDEPS) net_loop.c doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h net_defs.h doomtype.h d_ticcmd.h net_loop.h net_defs.h net_packet.h net_defs.h
+	$(CC) -c net_loop.c -o obj/net_loop.o $(CFLAGS)
+
+obj/net_packet.o: $(GLOBALDEPS) net_packet.c net_packet.h net_defs.h doomtype.h d_ticcmd.h doomtype.h z_zone.h
+	$(CC) -c net_packet.c -o obj/net_packet.o $(CFLAGS)
+
+obj/net_query.o: $(GLOBALDEPS) net_query.c i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h i_timer.h net_common.h d_mode.h doomtype.h net_defs.h doomtype.h d_ticcmd.h net_packet.h net_defs.h net_defs.h net_io.h net_defs.h net_packet.h net_query.h net_defs.h net_structrw.h md5.h doomtype.h net_defs.h net_packet.h net_sdl.h net_defs.h
+	$(CC) -c net_query.c -o obj/net_query.o $(CFLAGS)
+
+obj/net_structrw.o: $(GLOBALDEPS) net_structrw.c doomtype.h net_packet.h net_defs.h doomtype.h d_ticcmd.h doomtype.h net_structrw.h md5.h doomtype.h net_defs.h net_packet.h
+	$(CC) -c net_structrw.c -o obj/net_structrw.o $(CFLAGS)
+
+obj/tables.o: $(GLOBALDEPS) tables.c tables.h doomtype.h m_fixed.h
+	$(CC) -c tables.c -o obj/tables.o $(CFLAGS)
+
+obj/v_video.o: $(GLOBALDEPS) v_video.c i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h doomtype.h deh_str.h doomfeatures.h i_swap.h i_video.h doomtype.h m_bbox.h m_fixed.h m_misc.h doomtype.h v_video.h doomtype.h v_patch.h w_wad.h doomtype.h w_file.h doomtype.h z_zone.h
+	$(CC) -c v_video.c -o obj/v_video.o $(CFLAGS)
+
+obj/w_checksum.o: $(GLOBALDEPS) w_checksum.c md5.h doomtype.h w_checksum.h doomtype.h w_wad.h doomtype.h w_file.h doomtype.h
+	$(CC) -c w_checksum.c -o obj/w_checksum.o $(CFLAGS)
+
+obj/w_file.o: $(GLOBALDEPS) w_file.c config.h doomtype.h m_argv.h doomtype.h w_file.h doomtype.h
+	$(CC) -c w_file.c -o obj/w_file.o $(CFLAGS)
+
+obj/w_file_stdc.o: $(GLOBALDEPS) w_file_stdc.c m_misc.h doomtype.h w_file.h doomtype.h z_zone.h
+	$(CC) -c w_file_stdc.c -o obj/w_file_stdc.o $(CFLAGS)
+
+obj/w_main.o: $(GLOBALDEPS) w_main.c doomfeatures.h d_iwad.h d_mode.h doomtype.h m_argv.h doomtype.h w_main.h w_merge.h w_wad.h doomtype.h w_file.h doomtype.h z_zone.h
+	$(CC) -c w_main.c -o obj/w_main.o $(CFLAGS)
+
+obj/w_merge.o: $(GLOBALDEPS) w_merge.c doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h w_merge.h w_wad.h doomtype.h w_file.h doomtype.h z_zone.h
+	$(CC) -c w_merge.c -o obj/w_merge.o $(CFLAGS)
+
+obj/w_wad.o: $(GLOBALDEPS) w_wad.c doomtype.h i_swap.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h i_video.h doomtype.h m_misc.h doomtype.h z_zone.h w_wad.h doomtype.h w_file.h doomtype.h
+	$(CC) -c w_wad.c -o obj/w_wad.o $(CFLAGS)
+
+obj/z_zone.o: $(GLOBALDEPS) z_zone.c z_zone.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h doomtype.h
+	$(CC) -c z_zone.c -o obj/z_zone.o $(CFLAGS)
+
+obj/net_sdl.o: $(GLOBALDEPS) net_sdl.c doomtype.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h m_argv.h doomtype.h net_defs.h doomtype.h d_ticcmd.h net_io.h net_defs.h net_packet.h net_defs.h net_sdl.h net_defs.h z_zone.h
+	$(CC) -c net_sdl.c -o obj/net_sdl.o $(CFLAGS)
+
+obj/d_mode.o: $(GLOBALDEPS) d_mode.c doomtype.h d_mode.h doomtype.h
+	$(CC) -c d_mode.c -o obj/d_mode.o $(CFLAGS)
+
+obj/i_amigasound.o: $(GLOBALDEPS) i_amigasound.c z_zone.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h i_sound.h doomtype.h m_argv.h doomtype.h m_misc.h doomtype.h w_wad.h doomtype.h w_file.h doomtype.h doomsound.h
+	$(CC) -c i_amigasound.c -o obj/i_amigasound.o $(CFLAGS)
+
+obj/am_map.o: $(GLOBALDEPS) heretic/am_map.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/am_map.h heretic/am_data.h
+	$(CC) -c heretic/am_map.c -o obj/am_map.o $(CFLAGS)
+
+obj/ct_chat.o: $(GLOBALDEPS) heretic/ct_chat.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/ct_chat.c -o obj/ct_chat.o $(CFLAGS)
+
+obj/d_main.o: $(GLOBALDEPS) heretic/d_main.c heretic/ct_chat.h heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/d_main.c -o obj/d_main.o $(CFLAGS)
+
+obj/d_net.o: $(GLOBALDEPS) heretic/d_net.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h
+	$(CC) -c heretic/d_net.c -o obj/d_net.o $(CFLAGS)
+
+obj/f_finale.o: $(GLOBALDEPS) heretic/f_finale.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/s_sound.h
+	$(CC) -c heretic/f_finale.c -o obj/f_finale.o $(CFLAGS)
+
+obj/g_game.o: $(GLOBALDEPS) heretic/g_game.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/g_game.c -o obj/g_game.o $(CFLAGS)
+
+obj/in_lude.o: $(GLOBALDEPS) heretic/in_lude.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/in_lude.c -o obj/in_lude.o $(CFLAGS)
+
+obj/info.o: $(GLOBALDEPS) heretic/info.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_action.h
+	$(CC) -c heretic/info.c -o obj/info.o $(CFLAGS)
+
+obj/m_random.o: $(GLOBALDEPS) heretic/m_random.c heretic/m_random.h
+	$(CC) -c heretic/m_random.c -o obj/m_random.o $(CFLAGS)
+
+obj/mn_menu.o: $(GLOBALDEPS) heretic/mn_menu.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/r_local.h heretic/s_sound.h
+	$(CC) -c heretic/mn_menu.c -o obj/mn_menu.o $(CFLAGS)
+
+obj/p_ceilng.o: $(GLOBALDEPS) heretic/p_ceilng.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_ceilng.c -o obj/p_ceilng.o $(CFLAGS)
+
+obj/p_doors.o: $(GLOBALDEPS) heretic/p_doors.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_doors.c -o obj/p_doors.o $(CFLAGS)
+
+obj/p_enemy.o: $(GLOBALDEPS) heretic/p_enemy.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_enemy.c -o obj/p_enemy.o $(CFLAGS)
+
+obj/p_floor.o: $(GLOBALDEPS) heretic/p_floor.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_floor.c -o obj/p_floor.o $(CFLAGS)
+
+obj/p_inter.o: $(GLOBALDEPS) heretic/p_inter.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_inter.c -o obj/p_inter.o $(CFLAGS)
+
+obj/p_lights.o: $(GLOBALDEPS) heretic/p_lights.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h
+	$(CC) -c heretic/p_lights.c -o obj/p_lights.o $(CFLAGS)
+
+obj/p_map.o: $(GLOBALDEPS) heretic/p_map.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_map.c -o obj/p_map.o $(CFLAGS)
+
+obj/p_maputl.o: $(GLOBALDEPS) heretic/p_maputl.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h
+	$(CC) -c heretic/p_maputl.c -o obj/p_maputl.o $(CFLAGS)
+
+obj/p_mobj.o: $(GLOBALDEPS) heretic/p_mobj.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/sounds.h heretic/s_sound.h
+	$(CC) -c heretic/p_mobj.c -o obj/p_mobj.o $(CFLAGS)
+
+obj/p_plats.o: $(GLOBALDEPS) heretic/p_plats.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_plats.c -o obj/p_plats.o $(CFLAGS)
+
+obj/p_pspr.o: $(GLOBALDEPS) heretic/p_pspr.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_pspr.c -o obj/p_pspr.o $(CFLAGS)
+
+obj/p_setup.o: $(GLOBALDEPS) heretic/p_setup.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_setup.c -o obj/p_setup.o $(CFLAGS)
+
+obj/p_sight.o: $(GLOBALDEPS) heretic/p_sight.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h
+	$(CC) -c heretic/p_sight.c -o obj/p_sight.o $(CFLAGS)
+
+obj/p_spec.o: $(GLOBALDEPS) heretic/p_spec.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_spec.c -o obj/p_spec.o $(CFLAGS)
+
+obj/p_switch.o: $(GLOBALDEPS) heretic/p_switch.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_switch.c -o obj/p_switch.o $(CFLAGS)
+
+obj/p_telept.o: $(GLOBALDEPS) heretic/p_telept.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_telept.c -o obj/p_telept.o $(CFLAGS)
+
+obj/p_tick.o: $(GLOBALDEPS) heretic/p_tick.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h
+	$(CC) -c heretic/p_tick.c -o obj/p_tick.o $(CFLAGS)
+
+obj/p_user.o: $(GLOBALDEPS) heretic/p_user.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/p_user.c -o obj/p_user.o $(CFLAGS)
+
+obj/r_bsp.o: $(GLOBALDEPS) heretic/r_bsp.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/r_local.h
+	$(CC) -c heretic/r_bsp.c -o obj/r_bsp.o $(CFLAGS)
+
+obj/r_data.o: $(GLOBALDEPS) heretic/r_data.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/r_local.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h
+	$(CC) -c heretic/r_data.c -o obj/r_data.o $(CFLAGS)
+
+obj/r_draw.o: $(GLOBALDEPS) heretic/r_draw.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/r_local.h
+	$(CC) -c heretic/r_draw.c -o obj/r_draw.o $(CFLAGS)
+
+obj/r_main.o: $(GLOBALDEPS) heretic/r_main.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/r_local.h
+	$(CC) -c heretic/r_main.c -o obj/r_main.o $(CFLAGS)
+
+obj/r_plane.o: $(GLOBALDEPS) heretic/r_plane.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/r_local.h
+	$(CC) -c heretic/r_plane.c -o obj/r_plane.o $(CFLAGS)
+
+obj/r_segs.o: $(GLOBALDEPS) heretic/r_segs.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/r_local.h
+	$(CC) -c heretic/r_segs.c -o obj/r_segs.o $(CFLAGS)
+
+obj/r_things.o: $(GLOBALDEPS) heretic/r_things.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/r_local.h
+	$(CC) -c heretic/r_things.c -o obj/r_things.o $(CFLAGS)
+
+obj/s_sound.o: $(GLOBALDEPS) heretic/s_sound.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/sounds.h heretic/s_sound.h heretic/r_local.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/sounds.h
+	$(CC) -c heretic/s_sound.c -o obj/s_sound.o $(CFLAGS)
+
+obj/sb_bar.o: $(GLOBALDEPS) heretic/sb_bar.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/m_random.h heretic/p_local.h heretic/r_local.h heretic/p_spec.h heretic/s_sound.h
+	$(CC) -c heretic/sb_bar.c -o obj/sb_bar.o $(CFLAGS)
+
+obj/sounds.o: $(GLOBALDEPS) heretic/sounds.c heretic/doomdef.h heretic/doomdata.h heretic/dstrings.h heretic/info.h heretic/sounds.h heretic/sounds.h
+	$(CC) -c heretic/sounds.c -o obj/sounds.o $(CFLAGS)
+
+obj/i_sound.o: $(GLOBALDEPS) i_sound.c config.h doomfeatures.h doomtype.h i_sound.h doomtype.h i_video.h doomtype.h m_argv.h doomtype.h m_config.h
+	$(CC) -c i_sound.c -o obj/i_sound.o $(CFLAGS)
+
+obj/i_prismamusic.o: $(GLOBALDEPS) i_prismamusic.c z_zone.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h i_sound.h doomtype.h m_argv.h doomtype.h m_misc.h doomtype.h w_wad.h doomtype.h w_file.h doomtype.h doomsound.h
+	$(CPP) -c i_prismamusic.c -o obj/i_prismamusic.o $(CXXFLAGS)
+
+obj/i_camdmusic.o: $(GLOBALDEPS) i_camdmusic.c z_zone.h i_system.h d_ticcmd.h doomtype.h d_event.h doomtype.h i_sound.h doomtype.h m_argv.h doomtype.h m_misc.h doomtype.h w_wad.h doomtype.h w_file.h doomtype.h memio.h mus2mid.h doomtype.h memio.h doomsound.h
+	$(CC) -c i_camdmusic.c -o obj/i_camdmusic.o $(CFLAGS)

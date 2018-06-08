@@ -1,0 +1,379 @@
+# Project: Heretic
+  
+ifeq ($(strip $(DEVKITPRO)),)
+$(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
+endif
+  
+TOPDIR ?= $(CURDIR)
+include $(DEVKITPRO)/libnx/switch_rules
+export BUILD_EXEFS_SRC := build/exefs
+
+APP_TITLE := Chocolate-Heretic
+APP_DESCRIPTION := Chocolate-Heretic
+APP_AUTHOR := MVG
+APP_VERSION := 1.0.0
+ICON := heretic.jpg
+
+CC        = aarch64-none-elf-gcc
+
+LINKOBJ   = obj/deh_str.o obj/d_event.o obj/d_iwad.o obj/i_endoom.o obj/i_joystick.o obj/i_main.o obj/i_system.o obj/i_timer.o obj/i_video.o obj/icon.o obj/m_argv.o obj/m_bbox.o obj/m_cheat.o obj/m_config.o obj/m_controls.o obj/m_fixed.o obj/m_misc.o obj/memio.o obj/mus2mid.o obj/net_common.o obj/net_io.o obj/net_loop.o obj/net_packet.o obj/net_query.o obj/net_structrw.o obj/tables.o obj/v_video.o obj/w_checksum.o obj/w_file.o obj/w_file_stdc.o obj/w_main.o obj/w_merge.o obj/w_wad.o obj/z_zone.o   obj/d_mode.o  obj/am_map.o obj/ct_chat.o obj/d_main.o obj/d_net.o obj/f_finale.o obj/g_game.o obj/in_lude.o obj/info.o obj/m_random.o obj/mn_menu.o obj/p_ceilng.o obj/p_doors.o obj/p_enemy.o obj/p_floor.o obj/p_inter.o obj/p_lights.o obj/p_map.o obj/p_maputl.o obj/p_mobj.o obj/p_plats.o obj/p_pspr.o obj/p_setup.o obj/p_sight.o obj/p_spec.o obj/p_switch.o obj/p_telept.o obj/p_tick.o obj/p_user.o  obj/r_data.o obj/r_draw.o obj/r_main.o obj/r_plane.o   obj/r_things.o obj/s_sound.o obj/sb_bar.o obj/sounds.o obj/i_sound.o obj/p_saveg.o obj/r_bsp.o obj/r_segs.o  obj/d_loop.o obj/net_client.o obj/net_server.o obj/net_sdl.o obj/deh_main.o obj/deh_io.o obj/deh_htic.o obj/deh_ammo.o obj/deh_frame.o obj/deh_htext.o obj/deh_sound.o obj/deh_thing.o obj/deh_weapon.o obj/deh_mapping.o obj/sha1.o obj/i_sdlsound.o obj/i_input.o obj/i_sdlmusic.o obj/v_diskicon.o
+
+LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib  -lSDL2_mixer -lvorbisfile  -lvorbis  -logg -lmodplug -lmpg123 -lSDL2  -lm  -lstdc++ -lnx 
+INCS      =  -Isrc -Icodeblocks -Itextscreen -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include  
+CXXINCS   = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
+BUILD	  =	build
+BIN       = release/heretic.elf
+BINDIR	  = release
+CXXFLAGS  = $(CXXINCS) $(DEFINES) -fsigned-char -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -fomit-frame-pointer -O2 -DSWITCH
+CFLAGS    = $(INCS) $(DEFINES)    -fsigned-char -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -fomit-frame-pointer -O2 -DSWITCH
+GPROF     = gprof.exe
+RM        = rm -f
+LINK      = aarch64-none-elf-gcc
+CPP		  = aarch64-none-elf-g++
+OUTPUT    = heretic
+ 
+ifeq ($(strip $(ICON)),)
+	icons := $(wildcard *.jpg)
+	ifneq (,$(findstring $(TARGET).jpg,$(icons)))
+		export APP_ICON := $(TOPDIR)/$(TARGET).jpg
+	else
+		ifneq (,$(findstring icon.jpg,$(icons)))
+			export APP_ICON := $(TOPDIR)/icon.jpg
+		endif
+	endif
+else
+	export APP_ICON := $(TOPDIR)/$(ICON)
+endif
+
+ifeq ($(strip $(NO_ICON)),)
+	export NROFLAGS += --icon=$(APP_ICON)
+endif
+
+ifeq ($(strip $(NO_NACP)),)
+	export NROFLAGS += --nacp=$(BINDIR)/$(OUTPUT).nacp
+endif
+
+ifneq ($(APP_TITLEID),)
+	export NACPFLAGS += --titleid=$(APP_TITLEID)
+endif
+
+ifneq ($(ROMFS),)
+	export NROFLAGS += --romfsdir=$(CURDIR)/$(ROMFS)
+endif
+
+
+.PHONY: all all-before all-after clean clean-custom
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	$(RM) $(LINKOBJ) $(BIN)
+
+$(BIN): $(LINKOBJ)
+	$(LINK) $(LINKOBJ) -o "release/heretic.elf" $(LIBS)
+
+obj/deh_str.o: $(GLOBALDEPS) src/deh_str.c
+	$(CC) -c src/deh_str.c -o obj/deh_str.o $(CFLAGS)
+	
+obj/d_event.o: $(GLOBALDEPS) src/d_event.c
+	$(CC) -c src/d_event.c -o obj/d_event.o $(CFLAGS)
+
+obj/d_iwad.o: $(GLOBALDEPS) src/d_iwad.c
+	$(CC) -c src/d_iwad.c -o obj/d_iwad.o $(CFLAGS)
+
+obj/i_endoom.o: $(GLOBALDEPS) src/i_endoom.c  
+	$(CC) -c src/i_endoom.c -o obj/i_endoom.o $(CFLAGS)
+
+obj/i_joystick.o: $(GLOBALDEPS) src/i_joystick.c
+	$(CC) -c src/i_joystick.c -o obj/i_joystick.o $(CFLAGS)
+
+obj/i_main.o: $(GLOBALDEPS) src/i_main.c
+	$(CC) -c src/i_main.c -o obj/i_main.o $(CFLAGS)
+
+obj/i_system.o: $(GLOBALDEPS) src/i_system.c  
+	$(CC) -c src/i_system.c -o obj/i_system.o $(CFLAGS)
+
+obj/i_timer.o: $(GLOBALDEPS) src/i_timer.c  
+	$(CC) -c src/i_timer.c -o obj/i_timer.o $(CFLAGS)
+
+obj/i_video.o: $(GLOBALDEPS) src/i_video.c  
+	$(CC) -c src/i_video.c -o obj/i_video.o $(CFLAGS)
+
+obj/icon.o: $(GLOBALDEPS) src/icon.c
+	$(CC) -c src/icon.c -o obj/icon.o $(CFLAGS)
+
+obj/m_argv.o: $(GLOBALDEPS) src/m_argv.c  
+	$(CC) -c src/m_argv.c -o obj/m_argv.o $(CFLAGS)
+
+obj/m_bbox.o: $(GLOBALDEPS) src/m_bbox.c 
+	$(CC) -c src/m_bbox.c -o obj/m_bbox.o $(CFLAGS)
+
+obj/m_cheat.o: $(GLOBALDEPS) src/m_cheat.c 
+	$(CC) -c src/m_cheat.c -o obj/m_cheat.o $(CFLAGS)
+
+obj/m_config.o: $(GLOBALDEPS) src/m_config.c  
+	$(CC) -c src/m_config.c -o obj/m_config.o $(CFLAGS)
+
+obj/m_controls.o: $(GLOBALDEPS) src/m_controls.c  
+	$(CC) -c src/m_controls.c -o obj/m_controls.o $(CFLAGS)
+
+obj/m_fixed.o: $(GLOBALDEPS) src/m_fixed.c  
+	$(CC) -c src/m_fixed.c -o obj/m_fixed.o $(CFLAGS)
+
+obj/m_misc.o: $(GLOBALDEPS) src/m_misc.c  
+	$(CC) -c src/m_misc.c -o obj/m_misc.o $(CFLAGS)
+ 
+obj/memio.o: $(GLOBALDEPS) src/memio.c 
+	$(CC) -c src/memio.c -o obj/memio.o $(CFLAGS)
+
+obj/mus2mid.o: $(GLOBALDEPS) src/mus2mid.c 
+	$(CC) -c src/mus2mid.c -o obj/mus2mid.o $(CFLAGS)
+
+obj/net_common.o: $(GLOBALDEPS) src/net_common.c  
+	$(CC) -c src/net_common.c -o obj/net_common.o $(CFLAGS)
+
+obj/net_io.o: $(GLOBALDEPS) src/net_io.c 
+	$(CC) -c src/net_io.c -o obj/net_io.o $(CFLAGS)
+
+obj/net_loop.o: $(GLOBALDEPS) src/net_loop.c  
+	$(CC) -c src/net_loop.c -o obj/net_loop.o $(CFLAGS)
+
+obj/net_packet.o: $(GLOBALDEPS) src/net_packet.c  
+	$(CC) -c src/net_packet.c -o obj/net_packet.o $(CFLAGS)
+
+obj/net_query.o: $(GLOBALDEPS) src/net_query.c  
+	$(CC) -c src/net_query.c -o obj/net_query.o $(CFLAGS)
+
+obj/net_structrw.o: $(GLOBALDEPS) src/net_structrw.c  
+	$(CC) -c src/net_structrw.c -o obj/net_structrw.o $(CFLAGS)
+
+obj/tables.o: $(GLOBALDEPS) src/tables.c  
+	$(CC) -c src/tables.c -o obj/tables.o $(CFLAGS)
+
+obj/v_video.o: $(GLOBALDEPS) src/v_video.c 
+	$(CC) -c src/v_video.c -o obj/v_video.o $(CFLAGS)
+
+obj/w_checksum.o: $(GLOBALDEPS) src/w_checksum.c  
+	$(CC) -c src/w_checksum.c -o obj/w_checksum.o $(CFLAGS)
+
+obj/w_file.o: $(GLOBALDEPS) src/w_file.c  
+	$(CC) -c src/w_file.c -o obj/w_file.o $(CFLAGS)
+
+obj/w_file_stdc.o: $(GLOBALDEPS) src/w_file_stdc.c 
+	$(CC) -c src/w_file_stdc.c -o obj/w_file_stdc.o $(CFLAGS)
+
+obj/w_main.o: $(GLOBALDEPS) src/w_main.c  
+	$(CC) -c src/w_main.c -o obj/w_main.o $(CFLAGS)
+
+obj/w_merge.o: $(GLOBALDEPS) src/w_merge.c 
+	$(CC) -c src/w_merge.c -o obj/w_merge.o $(CFLAGS)
+
+obj/w_wad.o: $(GLOBALDEPS) src/w_wad.c  
+	$(CC) -c src/w_wad.c -o obj/w_wad.o $(CFLAGS)
+
+obj/z_zone.o: $(GLOBALDEPS) src/z_zone.c  
+	$(CC) -c src/z_zone.c -o obj/z_zone.o $(CFLAGS)
+ 
+
+obj/d_mode.o: $(GLOBALDEPS) src/d_mode.c  
+	$(CC) -c src/d_mode.c -o obj/d_mode.o $(CFLAGS)
+ 
+obj/am_map.o: $(GLOBALDEPS) src/heretic/am_map.c  
+	$(CC) -c src/heretic/am_map.c -o obj/am_map.o $(CFLAGS)
+
+obj/ct_chat.o: $(GLOBALDEPS) src/heretic/ct_chat.c 
+	$(CC) -c src/heretic/ct_chat.c -o obj/ct_chat.o $(CFLAGS)
+
+obj/d_main.o: $(GLOBALDEPS) src/heretic/d_main.c 
+	$(CC) -c src/heretic/d_main.c -o obj/d_main.o $(CFLAGS)
+
+obj/d_net.o: $(GLOBALDEPS) src/heretic/d_net.c  
+	$(CC) -c src/heretic/d_net.c -o obj/d_net.o $(CFLAGS)
+
+obj/f_finale.o: $(GLOBALDEPS) src/heretic/f_finale.c  
+	$(CC) -c src/heretic/f_finale.c -o obj/f_finale.o $(CFLAGS)
+
+obj/g_game.o: $(GLOBALDEPS) src/heretic/g_game.c  
+	$(CC) -c src/heretic/g_game.c -o obj/g_game.o $(CFLAGS)
+
+obj/in_lude.o: $(GLOBALDEPS) src/heretic/in_lude.c 
+	$(CC) -c src/heretic/in_lude.c -o obj/in_lude.o $(CFLAGS)
+
+obj/info.o: $(GLOBALDEPS) src/heretic/info.c 
+	$(CC) -c src/heretic/info.c -o obj/info.o $(CFLAGS)
+
+obj/m_random.o: $(GLOBALDEPS) src/heretic/m_random.c  
+	$(CC) -c src/heretic/m_random.c -o obj/m_random.o $(CFLAGS)
+
+obj/mn_menu.o: $(GLOBALDEPS) src/heretic/mn_menu.c 
+	$(CC) -c src/heretic/mn_menu.c -o obj/mn_menu.o $(CFLAGS)
+
+obj/p_ceilng.o: $(GLOBALDEPS) src/heretic/p_ceilng.c  
+	$(CC) -c src/heretic/p_ceilng.c -o obj/p_ceilng.o $(CFLAGS)
+
+obj/p_doors.o: $(GLOBALDEPS) src/heretic/p_doors.c  
+	$(CC) -c src/heretic/p_doors.c -o obj/p_doors.o $(CFLAGS)
+
+obj/p_enemy.o: $(GLOBALDEPS) src/heretic/p_enemy.c  
+	$(CC) -c src/heretic/p_enemy.c -o obj/p_enemy.o $(CFLAGS)
+
+obj/p_floor.o: $(GLOBALDEPS) src/heretic/p_floor.c 
+	$(CC) -c src/heretic/p_floor.c -o obj/p_floor.o $(CFLAGS)
+
+obj/p_inter.o: $(GLOBALDEPS) src/heretic/p_inter.c 
+	$(CC) -c src/heretic/p_inter.c -o obj/p_inter.o $(CFLAGS)
+
+obj/p_lights.o: $(GLOBALDEPS) src/heretic/p_lights.c  
+	$(CC) -c src/heretic/p_lights.c -o obj/p_lights.o $(CFLAGS)
+
+obj/p_map.o: $(GLOBALDEPS) src/heretic/p_map.c 
+	$(CC) -c src/heretic/p_map.c -o obj/p_map.o $(CFLAGS)
+
+obj/p_maputl.o: $(GLOBALDEPS) src/heretic/p_maputl.c  
+	$(CC) -c src/heretic/p_maputl.c -o obj/p_maputl.o $(CFLAGS)
+
+obj/p_mobj.o: $(GLOBALDEPS) src/heretic/p_mobj.c 
+	$(CC) -c src/heretic/p_mobj.c -o obj/p_mobj.o $(CFLAGS)
+
+obj/p_plats.o: $(GLOBALDEPS) src/heretic/p_plats.c 
+	$(CC) -c src/heretic/p_plats.c -o obj/p_plats.o $(CFLAGS)
+
+obj/p_pspr.o: $(GLOBALDEPS) src/heretic/p_pspr.c 
+	$(CC) -c src/heretic/p_pspr.c -o obj/p_pspr.o $(CFLAGS)
+
+obj/p_setup.o: $(GLOBALDEPS) src/heretic/p_setup.c  
+	$(CC) -c src/heretic/p_setup.c -o obj/p_setup.o $(CFLAGS)
+
+obj/p_sight.o: $(GLOBALDEPS) src/heretic/p_sight.c 
+	$(CC) -c src/heretic/p_sight.c -o obj/p_sight.o $(CFLAGS)
+
+obj/p_spec.o: $(GLOBALDEPS) src/heretic/p_spec.c  
+	$(CC) -c src/heretic/p_spec.c -o obj/p_spec.o $(CFLAGS)
+
+obj/p_switch.o: $(GLOBALDEPS) src/heretic/p_switch.c 
+	$(CC) -c src/heretic/p_switch.c -o obj/p_switch.o $(CFLAGS)
+
+obj/p_telept.o: $(GLOBALDEPS) src/heretic/p_telept.c 
+	$(CC) -c src/heretic/p_telept.c -o obj/p_telept.o $(CFLAGS)
+
+obj/p_tick.o: $(GLOBALDEPS) src/heretic/p_tick.c 
+	$(CC) -c src/heretic/p_tick.c -o obj/p_tick.o $(CFLAGS)
+
+obj/p_user.o: $(GLOBALDEPS) src/heretic/p_user.c  
+	$(CC) -c src/heretic/p_user.c -o obj/p_user.o $(CFLAGS)
+ 
+
+obj/r_data.o: $(GLOBALDEPS) src/heretic/r_data.c 
+	$(CC) -c src/heretic/r_data.c -o obj/r_data.o $(CFLAGS)
+
+obj/r_draw.o: $(GLOBALDEPS) src/heretic/r_draw.c  
+	$(CC) -c src/heretic/r_draw.c -o obj/r_draw.o $(CFLAGS)
+	
+obj/r_bsp.o: $(GLOBALDEPS) src/heretic/r_bsp.c  
+	$(CC) -c src/heretic/r_bsp.c -o obj/r_bsp.o $(CFLAGS)	
+	
+obj/r_segs.o: $(GLOBALDEPS) src/heretic/r_segs.c  
+	$(CC) -c src/heretic/r_segs.c -o obj/r_segs.o $(CFLAGS)		
+
+obj/r_main.o: $(GLOBALDEPS) src/heretic/r_main.c  
+	$(CC) -c src/heretic/r_main.c -o obj/r_main.o $(CFLAGS)
+
+obj/r_plane.o: $(GLOBALDEPS) src/heretic/r_plane.c  
+	$(CC) -c src/heretic/r_plane.c -o obj/r_plane.o $(CFLAGS)
+ 
+
+obj/r_things.o: $(GLOBALDEPS) src/heretic/r_things.c  
+	$(CC) -c src/heretic/r_things.c -o obj/r_things.o $(CFLAGS)
+
+obj/s_sound.o: $(GLOBALDEPS) src/heretic/s_sound.c 
+	$(CC) -c src/heretic/s_sound.c -o obj/s_sound.o $(CFLAGS)
+
+obj/sb_bar.o: $(GLOBALDEPS) src/heretic/sb_bar.c 
+	$(CC) -c src/heretic/sb_bar.c -o obj/sb_bar.o $(CFLAGS)
+
+obj/sounds.o: $(GLOBALDEPS) src/heretic/sounds.c  
+	$(CC) -c src/heretic/sounds.c -o obj/sounds.o $(CFLAGS)
+
+obj/i_sound.o: $(GLOBALDEPS) src/i_sound.c  
+	$(CC) -c src/i_sound.c -o obj/i_sound.o $(CFLAGS)
+	
+obj/p_saveg.o: $(GLOBALDEPS) src/heretic/p_saveg.c  
+	$(CC) -c src/heretic/p_saveg.c -o obj/p_saveg.o $(CFLAGS)	
+	
+obj/d_loop.o: $(GLOBALDEPS) src/d_loop.c  
+	$(CC) -c src/d_loop.c -o obj/d_loop.o $(CFLAGS)	
+	
+obj/net_client.o: $(GLOBALDEPS) src/net_client.c  
+	$(CC) -c src/net_client.c -o obj/net_client.o $(CFLAGS)		
+	
+obj/net_server.o: $(GLOBALDEPS) src/net_server.c  
+	$(CC) -c src/net_server.c -o obj/net_server.o $(CFLAGS)			
+	
+obj/net_sdl.o: $(GLOBALDEPS) src/net_sdl.c  
+	$(CC) -c src/net_sdl.c -o obj/net_sdl.o $(CFLAGS)		
+	
+obj/deh_main.o: $(GLOBALDEPS) src/deh_main.c  
+	$(CC) -c src/deh_main.c -o obj/deh_main.o $(CFLAGS)		
+
+obj/deh_io.o: $(GLOBALDEPS) src/deh_io.c  
+	$(CC) -c src/deh_io.c -o obj/deh_io.o $(CFLAGS)			
+	
+obj/deh_htic.o: $(GLOBALDEPS) src/heretic/deh_htic.c  
+	$(CC) -c src/heretic/deh_htic.c -o obj/deh_htic.o $(CFLAGS)		
+
+obj/deh_ammo.o: $(GLOBALDEPS) src/heretic/deh_ammo.c  
+	$(CC) -c src/heretic/deh_ammo.c -o obj/deh_ammo.o $(CFLAGS)		
+
+obj/deh_frame.o: $(GLOBALDEPS) src/heretic/deh_frame.c  
+	$(CC) -c src/heretic/deh_frame.c -o obj/deh_frame.o $(CFLAGS)		
+
+obj/deh_htext.o: $(GLOBALDEPS) src/heretic/deh_htext.c  
+	$(CC) -c src/heretic/deh_htext.c -o obj/deh_htext.o $(CFLAGS)		
+
+obj/deh_sound.o: $(GLOBALDEPS) src/heretic/deh_sound.c  
+	$(CC) -c src/heretic/deh_sound.c -o obj/deh_sound.o $(CFLAGS)		
+
+obj/deh_thing.o: $(GLOBALDEPS) src/heretic/deh_thing.c  
+	$(CC) -c src/heretic/deh_thing.c -o obj/deh_thing.o $(CFLAGS)	
+
+obj/deh_weapon.o: $(GLOBALDEPS) src/heretic/deh_weapon.c  
+	$(CC) -c src/heretic/deh_weapon.c -o obj/deh_weapon.o $(CFLAGS)		
+
+obj/deh_mapping.o: $(GLOBALDEPS) src/deh_mapping.c  
+	$(CC) -c src/deh_mapping.c -o obj/deh_mapping.o $(CFLAGS)	
+
+obj/sha1.o: $(GLOBALDEPS) src/sha1.c  
+	$(CC) -c src/sha1.c -o obj/sha1.o $(CFLAGS)	
+
+obj/i_sdlsound.o: $(GLOBALDEPS) src/i_sdlsound.c  
+	$(CC) -c src/i_sdlsound.c -o obj/i_sdlsound.o $(CFLAGS)		
+	
+obj/i_sdlmusic.o: $(GLOBALDEPS) src/i_sdlmusic.c  
+	$(CC) -c src/i_sdlmusic.c -o obj/i_sdlmusic.o $(CFLAGS)			
+
+obj/i_input.o: $(GLOBALDEPS) src/i_input.c  
+	$(CC) -c src/i_input.c -o obj/i_input.o $(CFLAGS)		
+	
+obj/v_diskicon.o: $(GLOBALDEPS) src/v_diskicon.c  
+	$(CC) -c src/v_diskicon.c -o obj/v_diskicon.o $(CFLAGS)			
+	
+#---------------------------------------------------------------------------------
+# main targets
+#---------------------------------------------------------------------------------
+all	:	$(BINDIR)/$(OUTPUT).pfs0 $(BINDIR)/$(OUTPUT).nro
+
+$(BINDIR)/$(OUTPUT).pfs0	:	$(BINDIR)/$(OUTPUT).nso
+
+$(BINDIR)/$(OUTPUT).nso	:	$(BINDIR)/$(OUTPUT).elf
+
+ifeq ($(strip $(NO_NACP)),)
+$(BINDIR)/$(OUTPUT).nro	:	$(BINDIR)/$(OUTPUT).elf $(BINDIR)/$(OUTPUT).nacp
+else
+$(BINDIR)/$(OUTPUT).nro	:	$(BINDIR)/$(OUTPUT).elf
+endif
+
+$(BINDIR)/$(OUTPUT).elf	:	$(OFILES)
+
+$(OFILES_SRC)	: $(HFILES_BIN)
+	
+# end of Makefile ...
+ 
