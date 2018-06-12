@@ -1874,8 +1874,6 @@ void M_StartControlPanel (void)
 
 static void M_DrawOPLDev(void)
 {
-
-#ifndef SWITCH
     extern void I_OPL_DevMessages(char *, size_t);
     char debug[1024];
     char *curr, *p;
@@ -1904,7 +1902,6 @@ static void M_DrawOPLDev(void)
 
         curr = p + 1;
     }
-#endif	
 }
 
 //

@@ -57,7 +57,7 @@ int snd_pitchshift = -1;
 static sound_module_t *sound_module;
 static music_module_t *music_module;
 
-int snd_musicdevice = SNDDEVICE_GENMIDI;
+int snd_musicdevice = SNDDEVICE_SB;
 int snd_sfxdevice = SNDDEVICE_SB;
 
 // Sound modules
@@ -144,7 +144,7 @@ static void InitSfxModule(boolean use_sfx_prefix)
             // Initialize the module
 
             if (sound_modules[i]->Init(use_sfx_prefix))
-            {
+            {				 
                 sound_module = sound_modules[i];
                 return;
             }
