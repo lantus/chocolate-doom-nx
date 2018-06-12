@@ -18,8 +18,11 @@ CC        = aarch64-none-elf-gcc
 
 LINKOBJ   = obj/deh_str.o obj/d_event.o obj/d_iwad.o obj/i_endoom.o obj/i_joystick.o obj/i_main.o obj/i_system.o obj/i_timer.o obj/i_video.o obj/icon.o obj/m_argv.o obj/m_bbox.o obj/m_cheat.o obj/m_config.o obj/m_controls.o obj/m_fixed.o obj/m_misc.o obj/memio.o obj/mus2mid.o obj/net_common.o obj/net_io.o obj/net_loop.o obj/net_packet.o obj/net_query.o obj/net_structrw.o obj/tables.o obj/v_video.o obj/w_checksum.o obj/w_file.o obj/w_file_stdc.o obj/w_main.o obj/w_merge.o obj/w_wad.o obj/z_zone.o   obj/d_mode.o  obj/am_map.o  obj/d_main.o obj/d_net.o obj/f_finale.o obj/g_game.o obj/info.o obj/m_random.o obj/m_menu.o obj/p_ceilng.o obj/p_doors.o obj/p_enemy.o obj/p_floor.o obj/p_inter.o obj/p_lights.o obj/p_map.o obj/p_maputl.o obj/p_mobj.o obj/p_plats.o obj/p_pspr.o obj/p_setup.o obj/p_sight.o obj/p_spec.o obj/p_switch.o obj/p_telept.o obj/p_tick.o obj/p_user.o  obj/r_data.o obj/r_draw.o obj/r_main.o obj/r_plane.o   obj/r_things.o obj/s_sound.o obj/sounds.o obj/i_sound.o obj/p_saveg.o obj/r_bsp.o obj/r_segs.o  obj/d_loop.o obj/net_client.o obj/net_server.o obj/net_sdl.o obj/deh_main.o obj/deh_io.o obj/deh_ammo.o obj/deh_frame.o obj/deh_sound.o obj/deh_thing.o obj/deh_weapon.o obj/deh_mapping.o obj/sha1.o obj/i_sdlsound.o obj/i_input.o obj/i_sdlmusic.o obj/v_diskicon.o obj/doomstat.o obj/d_items.o obj/hu_stuff.o	obj/hu_lib.o obj/r_sky.o obj/deh_doom.o	obj/deh_misc.o obj/st_stuff.o obj/st_lib.o obj/f_wipe.o obj/deh_cheat.o obj/deh_ptr.o obj/deh_text.o obj/dstrings.o obj/wi_stuff.o obj/statdump.o obj/deh_bexstr.o
 
+#OPL Music
+LINKOBJ   += obj/opl.o obj/opl_sdl.o obj/i_oplmusic.o obj/opl_queue.o obj/opl3.o obj/midifile.o
+
 LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib  -lSDL2_mixer -lvorbisfile  -lvorbis  -logg -lmodplug -lmpg123 -lSDL2  -lm  -lstdc++ -lnx 
-INCS      =  -Isrc -Icodeblocks -Itextscreen -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include  
+INCS      =  -Isrc -Icodeblocks -Iopl -Itextscreen -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include  
 CXXINCS   = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
 BUILD	  =	build
 BIN       = release/doom.elf
@@ -391,7 +394,27 @@ obj/statdump.o: $(GLOBALDEPS) src/doom/statdump.c
 	$(CC) -c src/doom/statdump.c -o obj/statdump.o $(CFLAGS)		
 	
 obj/deh_bexstr.o: $(GLOBALDEPS) src/doom/deh_bexstr.c  
-	$(CC) -c src/doom/deh_bexstr.c -o obj/deh_bexstr.o $(CFLAGS)		
+	$(CC) -c src/doom/deh_bexstr.c -o obj/deh_bexstr.o $(CFLAGS)	
+
+#OPL Music
+
+obj/opl.o: $(GLOBALDEPS) opl/opl.c  
+	$(CC) -c opl/opl.c -o obj/opl.o $(CFLAGS)	
+
+obj/opl_sdl.o: $(GLOBALDEPS) opl/opl_sdl.c  
+	$(CC) -c opl/opl_sdl.c -o obj/opl_sdl.o $(CFLAGS)		
+	
+obj/opl_queue.o: $(GLOBALDEPS) opl/opl_queue.c  
+	$(CC) -c opl/opl_queue.c -o obj/opl_queue.o $(CFLAGS)	
+
+obj/opl3.o: $(GLOBALDEPS) opl/opl3.c  
+	$(CC) -c opl/opl3.c -o obj/opl3.o $(CFLAGS)		
+	
+obj/i_oplmusic.o: $(GLOBALDEPS) src/i_oplmusic.c  
+	$(CC) -c src/i_oplmusic.c -o obj/i_oplmusic.o $(CFLAGS)		
+
+obj/midifile.o: $(GLOBALDEPS) src/midifile.c  
+	$(CC) -c src/midifile.c -o obj/midifile.o $(CFLAGS)			
  
 #---------------------------------------------------------------------------------
 # main targets
