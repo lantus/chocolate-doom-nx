@@ -1,3 +1,34 @@
+# Chocolate Doom Nintendo Switch Port
+
+## Compiling
+
+* Install devkitpro and install SDL2 and SDL Mixer (more details in [this video](https://www.youtube.com/watch?v=F4Dv32-PoU4))
+
+* Build Doom with 		make -f makefile.doom
+* Build Heretic with 	make -f makefile.heretic
+* Build Hexen with 		make -f makefile.hexen
+* Build Strife with 	make -f makefile.heretic
+
+## Running on Emulator
+
+* Download a compiled build for [Ryujinx](https://ryujinx.org/)
+* Goto the emulated sd card location ```%appdata%\RyuFs\sdmc``` and place inside:
+   - an empty folder called 'tmp'
+   - doom.nro
+   - default.cfg
+   - chocolate-doom.cfg
+   - doom.wad (or doom1.wad, doom2.wad, doom3.wad) please source yourself
+* Run the releases/doom.nro on the emulator via command line or drag and drop ```Ryujinx.exe ./doom.nro```
+
+## Running on the Nintendo Switch
+
+* Create a folder called 'doom' (or the same name as the .nro) on the switch homebrew folder (currently /switch/
+* Place inside the following files
+   - doom.nro
+   - default.cfg
+   - chocolate-doom.cfg
+   - doom.wad (or doom1.wad, doom2.wad, doom3.wad) please source yourself
+
 # Chocolate Doom
 
 Chocolate Doom aims to accurately reproduce the original DOS version of
@@ -102,12 +133,3 @@ chocolate-doom -merge aoddoom1.wad -deh aoddoom1.deh  (Army of Darkness Doom)
 
  * Please send any feedback, questions or suggestions to
    chocolate-doom-dev-list@chocolate-doom.org. Thanks!
-
-## Nintendo Switch Port - Compiling
-
-* Install devkitpro and install SDL2 and SDL Mixer
-* Build Doom with 		make -f makefile.doom
-* Build Heretic with 	make -f makefile.heretic
-* Build Hexen with 		make -f makefile.hexen
-* Build Strife with 	make -f makefile.heretic
-
