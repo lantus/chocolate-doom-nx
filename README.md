@@ -29,6 +29,18 @@
    - chocolate-doom.cfg
    - doom.wad (or doom1.wad, doom2.wad, doom3.wad) please source yourself
 
+## Controls
+
+You need to add the ```/releases/default.cfg``` and ```/releases/chocolate-doom.cfg``` access these controls
+
+* Left stick - Strafe and move
+* Right stick - Look
+* ZR - Fire
+* ZL - Sprint
+* L - Previous Weapon
+* R - Next Weapon
+* B - Use Item
+
 # Chocolate Doom
 
 Chocolate Doom aims to accurately reproduce the original DOS version of
