@@ -67,7 +67,9 @@ void I_Sleep(int ms)
 
 void I_WaitVBL(int count)
 {
+#ifndef SWITCH	
     I_Sleep((count * 1000) / 70);
+#endif	
 }
 
 
