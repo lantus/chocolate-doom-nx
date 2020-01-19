@@ -11,8 +11,8 @@ export BUILD_EXEFS_SRC := build/exefs
 APP_TITLE := Chocolate-Doom
 APP_DESCRIPTION := Chocolate-Doom
 APP_AUTHOR := MVG
-APP_VERSION := 1.0.2
-ICON := Doom.jpg
+APP_VERSION := 1.0.3
+ICON := doom.jpg
 
 CC        = aarch64-none-elf-gcc
 
@@ -21,7 +21,7 @@ LINKOBJ   = obj/deh_str.o obj/d_event.o obj/d_iwad.o obj/i_endoom.o obj/i_joysti
 #OPL Music
 LINKOBJ   += obj/opl.o obj/opl_sdl.o obj/i_oplmusic.o obj/opl_queue.o obj/opl3.o obj/midifile.o
 
-LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib  -lSDL2_mixer -lvorbisfile  -lvorbis  -logg -lmodplug -lmpg123 -lSDL2  -lm  -lstdc++ -lnx
+LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib  -lSDL2_mixer -lmpg123 -lmodplug -lvorbisidec -logg -lopusfile -lopus `sdl2-config --libs` -lm  -lstdc++ -lnx
 INCS      =  -Isrc -Icodeblocks -Iopl -Itextscreen -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include  
 CXXINCS   = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
 BUILD	  =	build
