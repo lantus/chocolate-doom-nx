@@ -803,21 +803,20 @@ char *D_TryFindWADByName(char *filename)
 char *D_FindIWAD(int mask, GameMission_t *mission)
 {
     char *result;
-    char *iwaddir;
+    char *waddir;
     char *iwadfile;
-    int iwaddirparm;
+    int waddirparm;
     int iwadparm;
     int i;
 
-    // Check for the -iwaddir parameter
+    // Check for the -waddir parameter
 
-    iwaddirparm = M_CheckParmWithArgs("-iwaddir", 1);
+    waddirparm = M_CheckParmWithArgs("-waddir", 1);
     
-    if (iwaddirparm) {
-        iwaddir = myargv[iwaddirparm + 1];
-        AddIWADDir(iwaddir);
+    if (waddirparm) {
+        waddir = myargv[waddirparm + 1];
+        AddIWADDir(waddir);
     }
-
 
     // Check for the -iwad parameter
 

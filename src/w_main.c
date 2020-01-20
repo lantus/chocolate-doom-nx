@@ -163,16 +163,6 @@ boolean W_ParseCommandLine(void)
         }
     }
 
-
-    // Check for the -pwaddir parameter
-
-    p = M_CheckParmWithArgs("-pwaddir", 1);
-    
-    if (p) {
-        char * pwaddir = myargv[p + 1];
-        AddIWADDir(iwaddir);
-    }
-
     //!
     // @arg <files>
     // @vanilla
