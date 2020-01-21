@@ -11,14 +11,14 @@ export BUILD_EXEFS_SRC := build/exefs
 APP_TITLE := Chocolate-Heretic
 APP_DESCRIPTION := Chocolate-Heretic
 APP_AUTHOR := MVG
-APP_VERSION := 1.0.0
+APP_VERSION := 1.0.3
 ICON := heretic.jpg
 
 CC        = aarch64-none-elf-gcc
 
 LINKOBJ   = obj/deh_str.o obj/d_event.o obj/d_iwad.o obj/i_endoom.o obj/i_joystick.o obj/i_main.o obj/i_system.o obj/i_timer.o obj/i_video.o obj/icon.o obj/m_argv.o obj/m_bbox.o obj/m_cheat.o obj/m_config.o obj/m_controls.o obj/m_fixed.o obj/m_misc.o obj/memio.o obj/mus2mid.o obj/net_common.o obj/net_io.o obj/net_loop.o obj/net_packet.o obj/net_query.o obj/net_structrw.o obj/tables.o obj/v_video.o obj/w_checksum.o obj/w_file.o obj/w_file_stdc.o obj/w_main.o obj/w_merge.o obj/w_wad.o obj/z_zone.o   obj/d_mode.o  obj/am_map.o obj/ct_chat.o obj/d_main.o obj/d_net.o obj/f_finale.o obj/g_game.o obj/in_lude.o obj/info.o obj/m_random.o obj/mn_menu.o obj/p_ceilng.o obj/p_doors.o obj/p_enemy.o obj/p_floor.o obj/p_inter.o obj/p_lights.o obj/p_map.o obj/p_maputl.o obj/p_mobj.o obj/p_plats.o obj/p_pspr.o obj/p_setup.o obj/p_sight.o obj/p_spec.o obj/p_switch.o obj/p_telept.o obj/p_tick.o obj/p_user.o  obj/r_data.o obj/r_draw.o obj/r_main.o obj/r_plane.o   obj/r_things.o obj/s_sound.o obj/sb_bar.o obj/sounds.o obj/i_sound.o obj/p_saveg.o obj/r_bsp.o obj/r_segs.o  obj/d_loop.o obj/net_client.o obj/net_server.o obj/net_sdl.o obj/deh_main.o obj/deh_io.o obj/deh_htic.o obj/deh_ammo.o obj/deh_frame.o obj/deh_htext.o obj/deh_sound.o obj/deh_thing.o obj/deh_weapon.o obj/deh_mapping.o obj/sha1.o obj/i_sdlsound.o obj/i_input.o obj/i_sdlmusic.o obj/v_diskicon.o
 
-LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib  -lSDL2_mixer -lvorbisfile  -lvorbis  -logg -lmodplug -lmpg123 -lSDL2  -lm  -lstdc++ -lnx 
+LIBS      = -specs=$(DEVKITPRO)/libnx/switch.specs -g -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -L$(DEVKITPRO)/libnx/lib -L$(DEVKITPRO)/portlibs/switch/lib  -lSDL2_mixer -lmpg123 -lmodplug -lvorbisidec -logg -lopusfile -lopus `sdl2-config --libs` -lm  -lstdc++ -lnx 
 INCS      =  -Isrc -Icodeblocks -Itextscreen -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include  
 CXXINCS   = -I$(DEVKITPRO)/portlibs/switch/include/SDL2 -I"src/main" -I$(DEVKITPRO)/libnx/include -I$(DEVKITPRO)/portlibs/switch/include
 BUILD	  =	build
