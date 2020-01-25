@@ -1426,6 +1426,18 @@ boolean M_Responder (event_t* ev)
 	    joywait = I_GetTime() + 5;
 	}
 		
+        #ifdef SWITCH
+            if (ev->data4 < 0)
+            {
+                key = key_menu_left;
+                joywait = I_GetTime() + 2;
+            }
+            else if (ev->data4 > 0)
+            {
+                key = key_menu_right;
+                joywait = I_GetTime() + 2;
+            }
+        #else
 	if (ev->data2 < 0)
 	{
 	    key = key_menu_left;
@@ -1436,6 +1448,7 @@ boolean M_Responder (event_t* ev)
 	    key = key_menu_right;
 	    joywait = I_GetTime() + 2;
 	}
+        #endif
 
 #define JOY_BUTTON_MAPPED(x) ((x) >= 0)
 #define JOY_BUTTON_PRESSED(x) (JOY_BUTTON_MAPPED(x) && (ev->data1 & (1 << (x))) != 0)
