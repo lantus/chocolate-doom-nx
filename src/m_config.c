@@ -1194,6 +1194,79 @@ static default_t extra_defaults_list[] =
 
     CONFIG_VARIABLE_INT(joystick_physical_button10),
 
+    #ifdef SWITCH
+        //!
+        // The physical joystick button that corresponds to joystick
+        // virtual button #11.
+        //
+
+        CONFIG_VARIABLE_INT(joystick_physical_button11),
+
+        //!
+        // The physical joystick button that corresponds to joystick
+        // virtual button #12.
+        //
+
+        CONFIG_VARIABLE_INT(joystick_physical_button12),
+
+        //!
+        // The physical joystick button that corresponds to joystick
+        // virtual button #13.
+        //
+
+        CONFIG_VARIABLE_INT(joystick_physical_button13),
+
+        //!
+        // The physical joystick button that corresponds to joystick
+        // virtual button #14.
+        //
+
+        CONFIG_VARIABLE_INT(joystick_physical_button14),
+
+        //!
+        // The physical joystick button that corresponds to joystick
+        // virtual button #15.
+        //
+
+        CONFIG_VARIABLE_INT(joystick_physical_button15),
+        
+        //!
+        // Joystick virtual button that goes up in the menu.
+        //
+
+        CONFIG_VARIABLE_INT(joyb_menu_up),
+
+        //!
+        // Joystick virtual button that goes down in the menu.
+        //
+
+        CONFIG_VARIABLE_INT(joyb_menu_down),
+
+        //!
+        // Joystick virtual button that goes left in the menu.
+        //
+
+        CONFIG_VARIABLE_INT(joyb_menu_left),
+
+        //!
+        // Joystick virtual button that goes right in the menu.
+        //
+
+        CONFIG_VARIABLE_INT(joyb_menu_right),
+
+        //!
+        // Joystick virtual button that makes the player move forward.
+        //
+
+        CONFIG_VARIABLE_INT(joyb_forward),
+
+        //!
+        // Joystick virtual button that makes the player move backward.
+        //
+
+        CONFIG_VARIABLE_INT(joyb_backward),
+    #endif
+
     //!
     // Joystick virtual button to make the player strafe left.
     //

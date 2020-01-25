@@ -136,6 +136,15 @@ extern int mousebuse;
 extern int mousebprevweapon;
 extern int mousebnextweapon;
 
+#ifdef SWITCH
+    extern int joybmenuup;
+    extern int joybmenudown;
+    extern int joybmenuleft;
+    extern int joybmenuright;
+    extern int joybforward;
+    extern int joybbackward;
+#endif
+
 extern int joybfire;
 extern int joybstrafe;
 extern int joybuse;

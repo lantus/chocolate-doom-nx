@@ -72,9 +72,15 @@ static int joystick_look_invert = 0;
 
 // Virtual to physical button joystick button mapping. By default this
 // is a straight mapping.
-static int joystick_physical_buttons[NUM_VIRTUAL_BUTTONS] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-};
+#ifdef SWITCH
+    static int joystick_physical_buttons[NUM_VIRTUAL_BUTTONS] = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+    };
+#else
+    static int joystick_physical_buttons[NUM_VIRTUAL_BUTTONS] = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    };
+#endif
 
 void I_ShutdownJoystick(void)
 {
@@ -259,8 +265,13 @@ static int ReadButtonState(int vbutton)
     {
         return 0;
     }
+
+    int pressed = SDL_JoystickGetButton(joystick, physbutton);
+    if (pressed && vbutton >= 12 && vbutton <= 15) {
+        printf("Button Pressed: %d\n", vbutton);
+    }
 	 
-    return SDL_JoystickGetButton(joystick, physbutton);
+    return pressed;
 }
 
 // Get a bitmask of all currently-pressed buttons

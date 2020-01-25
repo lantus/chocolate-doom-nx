@@ -637,7 +637,7 @@ void M_DoSave(int slot)
 static void SetDefaultSaveName(int slot)
 {
     M_snprintf(savegamestrings[itemOn], SAVESTRINGSIZE - 1,
-               "JOYSTICK SLOT %i", itemOn + 1);
+            "JOYSTICK SLOT %i", itemOn + 1);
     joypadSave = false;
 }
 
@@ -673,28 +673,28 @@ void M_SaveSelect(int choice)
 
         swkbdClose(&config);
     #else
-    int x, y;
+        int x, y;
 
-    // we are going to be intercepting all chars
-    saveStringEnter = 1;
+        // we are going to be intercepting all chars
+        saveStringEnter = 1;
 
-    // We need to turn on text input:
-    x = LoadDef.x - 11;
-    y = LoadDef.y + choice * LINEHEIGHT - 4;
-    I_StartTextInput(x, y, x + 8 + 24 * 8 + 8, y + LINEHEIGHT - 2);
-
-    saveSlot = choice;
-    M_StringCopy(saveOldString,savegamestrings[choice], SAVESTRINGSIZE);
-    if (!strcmp(savegamestrings[choice], EMPTYSTRING))
-    {
-        savegamestrings[choice][0] = 0;
-
-        if (joypadSave)
+        // We need to turn on text input:
+        x = LoadDef.x - 11;
+        y = LoadDef.y + choice * LINEHEIGHT - 4;
+        I_StartTextInput(x, y, x + 8 + 24 * 8 + 8, y + LINEHEIGHT - 2);
+        
+        saveSlot = choice;
+        M_StringCopy(saveOldString,savegamestrings[choice], SAVESTRINGSIZE);
+        if (!strcmp(savegamestrings[choice], EMPTYSTRING))
         {
-            SetDefaultSaveName(choice);
+            savegamestrings[choice][0] = 0;
+
+            if (joypadSave)
+            {
+                SetDefaultSaveName(choice);
+            }
         }
-    }
-    saveCharIndex = strlen(savegamestrings[choice]);
+        saveCharIndex = strlen(savegamestrings[choice]);
     #endif
 }
 
@@ -1415,17 +1415,17 @@ boolean M_Responder (event_t* ev)
     {
         // Simulate key presses from joystick events to interact with the menu.
 
-	if (ev->data3 < 0)
-	{
-	    key = key_menu_up;
-	    joywait = I_GetTime() + 5;
-	}
-	else if (ev->data3 > 0)
-	{
-	    key = key_menu_down;
-	    joywait = I_GetTime() + 5;
-	}
-		
+        if (ev->data3 < 0)
+        {
+            key = key_menu_up;
+            joywait = I_GetTime() + 5;
+        }
+        else if (ev->data3 > 0)
+        {
+            key = key_menu_down;
+            joywait = I_GetTime() + 5;
+        }
+
         #ifdef SWITCH
             if (ev->data4 < 0)
             {
@@ -1438,20 +1438,42 @@ boolean M_Responder (event_t* ev)
                 joywait = I_GetTime() + 2;
             }
         #else
-	if (ev->data2 < 0)
-	{
-	    key = key_menu_left;
-	    joywait = I_GetTime() + 2;
-	}
-	else if (ev->data2 > 0)
-	{
-	    key = key_menu_right;
-	    joywait = I_GetTime() + 2;
-	}
+            if (ev->data2 < 0)
+            {
+                key = key_menu_left;
+                joywait = I_GetTime() + 2;
+            }
+            else if (ev->data2 > 0)
+            {
+                key = key_menu_right;
+                joywait = I_GetTime() + 2;
+            }
         #endif
 
-#define JOY_BUTTON_MAPPED(x) ((x) >= 0)
-#define JOY_BUTTON_PRESSED(x) (JOY_BUTTON_MAPPED(x) && (ev->data1 & (1 << (x))) != 0)
+        #define JOY_BUTTON_MAPPED(x) ((x) >= 0)
+        #define JOY_BUTTON_PRESSED(x) (JOY_BUTTON_MAPPED(x) && (ev->data1 & (1 << (x))) != 0)
+
+        #ifdef SWITCH
+            if (JOY_BUTTON_PRESSED(joybmenuup)) {
+                key = key_menu_up;
+                joywait = I_GetTime() + 5;
+            }
+
+            if (JOY_BUTTON_PRESSED(joybmenudown)) {
+                key = key_menu_down;
+                joywait = I_GetTime() + 5;
+            }
+
+            if (JOY_BUTTON_PRESSED(joybmenuleft)) {
+                key = key_menu_left;
+                joywait = I_GetTime() + 5;
+            }
+
+            if (JOY_BUTTON_PRESSED(joybmenuright)) {
+                key = key_menu_right;
+                joywait = I_GetTime() + 5;
+            }
+        #endif
 
         if (JOY_BUTTON_PRESSED(joybfire) || JOY_BUTTON_PRESSED(0))
         {
@@ -1476,6 +1498,7 @@ boolean M_Responder (event_t* ev)
             }
             joywait = I_GetTime() + 5;
         }
+
         if (JOY_BUTTON_PRESSED(joybuse))
         {
             // Simulate a 'N' keypress when Doom show a Y/N dialog with Use button.
@@ -1494,6 +1517,7 @@ boolean M_Responder (event_t* ev)
             }
             joywait = I_GetTime() + 5;
         }
+
         if (JOY_BUTTON_PRESSED(joybmenu) || JOY_BUTTON_PRESSED(11))
         {
             key = key_menu_activate;
