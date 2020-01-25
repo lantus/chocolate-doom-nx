@@ -21,6 +21,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#ifdef SWITCH
+    #include <switch.h>
+#endif
 
 #include "doomdef.h"
 #include "doomkeys.h"
@@ -58,7 +61,6 @@
 #include "sounds.h"
 
 #include "m_menu.h"
-
 
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
@@ -644,6 +646,33 @@ static void SetDefaultSaveName(int slot)
 //
 void M_SaveSelect(int choice)
 {
+    #ifdef SWITCH
+        SwkbdConfig config;
+
+        swkbdCreate(&config, 0);
+
+        swkbdConfigMakePresetDefault(&config);
+        swkbdConfigSetHeaderText(&config, "Save Game");
+        if (!strcmp(savegamestrings[choice], EMPTYSTRING)) {
+            swkbdConfigSetInitialText(&config, "");
+        } else {
+            swkbdConfigSetInitialText(&config, savegamestrings[choice]);
+        }
+        swkbdConfigSetBlurBackground(&config, true);
+        swkbdConfigSetType(&config, SwkbdType_QWERTY);
+        swkbdConfigSetStringLenMax(&config, SAVESTRINGSIZE);
+        swkbdConfigSetStringLenMaxExt(&config, 1);
+        swkbdConfigSetKeySetDisableBitmask(&config, SwkbdKeyDisableBitmask_Percent | SwkbdKeyDisableBitmask_ForwardSlash | SwkbdKeyDisableBitmask_Backslash);
+
+         char buffer[SAVESTRINGSIZE] = { 0 };
+
+        if (R_SUCCEEDED(swkbdShow(&config, buffer, SAVESTRINGSIZE)) && strlen(buffer) != 0) {
+            strcpy(savegamestrings[choice], buffer);
+    		M_DoSave(choice);
+        }
+
+        swkbdClose(&config);
+    #else
     int x, y;
 
     // we are going to be intercepting all chars
@@ -666,6 +695,7 @@ void M_SaveSelect(int choice)
         }
     }
     saveCharIndex = strlen(savegamestrings[choice]);
+    #endif
 }
 
 //
