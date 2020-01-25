@@ -1240,10 +1240,6 @@ static void SetVideoMode(void)
         SDL_DestroyRenderer(renderer);
     }
 
-#ifdef SWITCH
-	renderer_flags = SDL_RENDERER_SOFTWARE;
-#endif
-
     renderer = SDL_CreateRenderer(screen, -1, renderer_flags);
 
     if (renderer == NULL)
