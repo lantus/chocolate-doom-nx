@@ -11,7 +11,7 @@ export BUILD_EXEFS_SRC := build/exefs
 APP_TITLE := Chocolate-Doom
 APP_DESCRIPTION := Chocolate-Doom
 APP_AUTHOR := MVG
-APP_VERSION := 1.0.3
+APP_VERSION := 1.1.0
 ICON := doom.jpg
 
 CC        = aarch64-none-elf-gcc
