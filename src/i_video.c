@@ -89,8 +89,13 @@ static boolean initialized = false;
 
 // disable mouse?
 
-static boolean nomouse = false;
-int usemouse = 1;
+#ifdef SWITCH
+    static boolean nomouse = true;
+    int usemouse = 0;
+#else
+    static boolean nomouse = false;
+    int usemouse = 1;
+#endif
 
 // Save screenshots in PNG format.
 
@@ -218,43 +223,47 @@ unsigned int joywait = 0;
 
 static boolean MouseShouldBeGrabbed()
 {
-    // never grab the mouse when in screensaver mode
-   
-    if (screensaver_mode)
+    #ifdef SWITCH
         return false;
+    #else
+        // never grab the mouse when in screensaver mode
+    
+        if (screensaver_mode)
+            return false;
 
-    // if the window doesn't have focus, never grab it
+        // if the window doesn't have focus, never grab it
 
-    if (!window_focused)
-        return false;
+        if (!window_focused)
+            return false;
 
-    // always grab the mouse when full screen (dont want to 
-    // see the mouse pointer)
+        // always grab the mouse when full screen (dont want to 
+        // see the mouse pointer)
 
-    if (fullscreen)
-        return true;
+        if (fullscreen)
+            return true;
 
-    // Don't grab the mouse if mouse input is disabled
+        // Don't grab the mouse if mouse input is disabled
 
-    if (!usemouse || nomouse)
-        return false;
+        if (!usemouse || nomouse)
+            return false;
 
-    // if we specify not to grab the mouse, never grab
+        // if we specify not to grab the mouse, never grab
 
-    if (nograbmouse_override || !grabmouse)
-        return false;
+        if (nograbmouse_override || !grabmouse)
+            return false;
 
-    // Invoke the grabmouse callback function to determine whether
-    // the mouse should be grabbed
+        // Invoke the grabmouse callback function to determine whether
+        // the mouse should be grabbed
 
-    if (grabmouse_callback != NULL)
-    {
-        return grabmouse_callback();
-    }
-    else
-    {
-        return true;
-    }
+        if (grabmouse_callback != NULL)
+        {
+            return grabmouse_callback();
+        }
+        else
+        {
+            return true;
+        }
+    #endif
 }
 
 void I_SetGrabMouseCallback(grabmouse_callback_t func)
@@ -939,16 +948,15 @@ void I_GraphicsCheckCommandLine(void)
 
     noblit = M_CheckParm ("-noblit");
 
-    //!
-    // @category video 
-    //
-    // Don't grab the mouse when running in windowed mode.
-    //
-
-    nograbmouse_override = M_ParmExists("-nograbmouse");
-
-
     #ifndef SWITCH
+        //!
+        // @category video 
+        //
+        // Don't grab the mouse when running in windowed mode.
+        //
+
+        nograbmouse_override = M_ParmExists("-nograbmouse");
+
         // default to fullscreen mode, allow override with command line
         // nofullscreen because we love prboom
 
@@ -973,17 +981,15 @@ void I_GraphicsCheckCommandLine(void)
         {
             fullscreen = true;
         }
-    #endif
 
-    //!
-    // @category video 
-    //
-    // Disable the mouse.
-    //
+        //!
+        // @category video 
+        //
+        // Disable the mouse.
+        //
 
-    nomouse = M_CheckParm("-nomouse") > 0;
+        nomouse = M_CheckParm("-nomouse") > 0;
 
-    #ifndef SWITCH
         //!
         // @category video
         // @arg <x>
@@ -1446,13 +1452,11 @@ void I_InitGraphics(void)
 void I_BindVideoVariables(void)
 {
     #ifdef SWITCH
-        M_BindIntVariable("use_mouse",                 &usemouse);
         M_BindIntVariable("aspect_ratio_correct",      &aspect_ratio_correct);
         M_BindIntVariable("integer_scaling",           &integer_scaling);
         M_BindIntVariable("vga_porch_flash",           &vga_porch_flash);
         M_BindIntVariable("force_software_renderer",   &force_software_renderer);
         M_BindIntVariable("max_scaling_buffer_pixels", &max_scaling_buffer_pixels);
-        M_BindIntVariable("grabmouse",                 &grabmouse);
         M_BindIntVariable("usegamma",                  &usegamma);
         M_BindIntVariable("png_screenshots",           &png_screenshots);
     #else
