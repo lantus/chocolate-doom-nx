@@ -102,7 +102,11 @@ char *video_driver = "";
 
 // Window position:
 
-char *window_position = "center";
+#ifdef SWITCH
+    char *window_position = "";
+#else
+    char *window_position = "center";
+#endif
 
 // SDL display number on which to run.
 
@@ -110,12 +114,21 @@ int video_display = 0;
 
 // Screen width and height, from configuration file.
 
-int window_width = SCREENWIDTH * 2;
-int window_height = SCREENHEIGHT_4_3 * 2;
+#ifdef SWITCH
+    int window_width = 0;
+    int window_height = 0;
+#else
+    int window_width = SCREENWIDTH * 2;
+    int window_height = SCREENHEIGHT_4_3 * 2;
+#endif
 
 // Fullscreen mode, 0x0 for SDL_WINDOW_FULLSCREEN_DESKTOP.
 
-int fullscreen_width = 0, fullscreen_height = 0;
+#ifdef SWITCH
+    int fullscreen_width = 1280, fullscreen_height = 720;
+#else
+    int fullscreen_width = 0, fullscreen_height = 0;
+#endif
 
 // Maximum number of pixels to use for intermediate scale buffer.
 
@@ -146,7 +159,11 @@ int force_software_renderer = false;
 // Time to wait for the screen to settle on startup before starting the
 // game (ms)
 
-static int startup_delay = 1000;
+#ifdef SWITCH
+    static int startup_delay = 0;
+#else
+    static int startup_delay = 1000;
+#endif
 
 // Grab the mouse? (int type for config code). nograbmouse_override allows
 // this to be temporarily disabled via the command line.
@@ -380,30 +397,32 @@ static boolean ToggleFullScreenKeyShortcut(SDL_Keysym *sym)
 
 static void I_ToggleFullScreen(void)
 {
-    unsigned int flags = 0;
+    #ifndef SWITCH
+        unsigned int flags = 0;
 
-    // TODO: Consider implementing fullscreen toggle for SDL_WINDOW_FULLSCREEN
-    // (mode-changing) setup. This is hard because we have to shut down and
-    // restart again.
-    if (fullscreen_width != 0 || fullscreen_height != 0)
-    {
-        return;
-    }
+        // TODO: Consider implementing fullscreen toggle for SDL_WINDOW_FULLSCREEN
+        // (mode-changing) setup. This is hard because we have to shut down and
+        // restart again.
+        if (fullscreen_width != 0 || fullscreen_height != 0)
+        {
+            return;
+        }
 
-    fullscreen = !fullscreen;
+        fullscreen = !fullscreen;
 
-    if (fullscreen)
-    {
-        flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    }
+        if (fullscreen)
+        {
+            flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        }
 
-    SDL_SetWindowFullscreen(screen, flags);
+        SDL_SetWindowFullscreen(screen, flags);
 
-    if (!fullscreen)
-    {
-        AdjustWindowSize();
-        SDL_SetWindowSize(screen, window_width, window_height);
-    }
+        if (!fullscreen)
+        {
+            AdjustWindowSize();
+            SDL_SetWindowSize(screen, window_width, window_height);
+        }
+    #endif
 }
 
 void I_GetEvent(void)
@@ -928,30 +947,33 @@ void I_GraphicsCheckCommandLine(void)
 
     nograbmouse_override = M_ParmExists("-nograbmouse");
 
-    // default to fullscreen mode, allow override with command line
-    // nofullscreen because we love prboom
 
-    //!
-    // @category video 
-    //
-    // Run in a window.
-    //
+    #ifndef SWITCH
+        // default to fullscreen mode, allow override with command line
+        // nofullscreen because we love prboom
 
-    if (M_CheckParm("-window") || M_CheckParm("-nofullscreen"))
-    {
-        fullscreen = false;
-    }
+        //!
+        // @category video 
+        //
+        // Run in a window.
+        //
 
-    //!
-    // @category video 
-    //
-    // Run in fullscreen mode.
-    //
+        if (M_CheckParm("-window") || M_CheckParm("-nofullscreen"))
+        {
+            fullscreen = false;
+        }
 
-    if (M_CheckParm("-fullscreen"))
-    {
-        fullscreen = true;
-    }
+        //!
+        // @category video 
+        //
+        // Run in fullscreen mode.
+        //
+
+        if (M_CheckParm("-fullscreen"))
+        {
+            fullscreen = true;
+        }
+    #endif
 
     //!
     // @category video 
@@ -961,94 +983,96 @@ void I_GraphicsCheckCommandLine(void)
 
     nomouse = M_CheckParm("-nomouse") > 0;
 
-    //!
-    // @category video
-    // @arg <x>
-    //
-    // Specify the screen width, in pixels. Implies -window.
-    //
+    #ifndef SWITCH
+        //!
+        // @category video
+        // @arg <x>
+        //
+        // Specify the screen width, in pixels. Implies -window.
+        //
 
-    i = M_CheckParmWithArgs("-width", 1);
+        i = M_CheckParmWithArgs("-width", 1);
 
-    if (i > 0)
-    {
-        window_width = atoi(myargv[i + 1]);
-        window_height = window_width * 2;
-        AdjustWindowSize();
-        fullscreen = false;
-    }
-
-    //!
-    // @category video
-    // @arg <y>
-    //
-    // Specify the screen height, in pixels. Implies -window.
-    //
-
-    i = M_CheckParmWithArgs("-height", 1);
-
-    if (i > 0)
-    {
-        window_height = atoi(myargv[i + 1]);
-        window_width = window_height * 2;
-        AdjustWindowSize();
-        fullscreen = false;
-    }
-
-    //!
-    // @category video
-    // @arg <WxY>
-    //
-    // Specify the dimensions of the window. Implies -window.
-    //
-
-    i = M_CheckParmWithArgs("-geometry", 1);
-
-    if (i > 0)
-    {
-        int w, h, s;
-
-        s = sscanf(myargv[i + 1], "%ix%i", &w, &h);
-        if (s == 2)
+        if (i > 0)
         {
-            window_width = w;
-            window_height = h;
+            window_width = atoi(myargv[i + 1]);
+            window_height = window_width * 2;
+            AdjustWindowSize();
             fullscreen = false;
         }
-    }
 
-    //!
-    // @category video
-    //
-    // Don't scale up the screen. Implies -window.
-    //
+        //!
+        // @category video
+        // @arg <y>
+        //
+        // Specify the screen height, in pixels. Implies -window.
+        //
 
-    if (M_CheckParm("-1")) 
-    {
-        SetScaleFactor(1);
-    }
+        i = M_CheckParmWithArgs("-height", 1);
 
-    //!
-    // @category video
-    //
-    // Double up the screen to 2x its normal size. Implies -window.
-    //
+        if (i > 0)
+        {
+            window_height = atoi(myargv[i + 1]);
+            window_width = window_height * 2;
+            AdjustWindowSize();
+            fullscreen = false;
+        }
 
-    if (M_CheckParm("-2")) 
-    {
-        SetScaleFactor(2);
-    }
+        //!
+        // @category video
+        // @arg <WxY>
+        //
+        // Specify the dimensions of the window. Implies -window.
+        //
 
-    //!
-    // @category video
-    //
-    // Double up the screen to 3x its normal size. Implies -window.
-    //
+        i = M_CheckParmWithArgs("-geometry", 1);
 
-    if (M_CheckParm("-3")) 
-    {
-        SetScaleFactor(3);
-    }
+        if (i > 0)
+        {
+            int w, h, s;
+
+            s = sscanf(myargv[i + 1], "%ix%i", &w, &h);
+            if (s == 2)
+            {
+                window_width = w;
+                window_height = h;
+                fullscreen = false;
+            }
+        }
+
+        //!
+        // @category video
+        //
+        // Don't scale up the screen. Implies -window.
+        //
+
+        if (M_CheckParm("-1")) 
+        {
+            SetScaleFactor(1);
+        }
+
+        //!
+        // @category video
+        //
+        // Double up the screen to 2x its normal size. Implies -window.
+        //
+
+        if (M_CheckParm("-2")) 
+        {
+            SetScaleFactor(2);
+        }
+
+        //!
+        // @category video
+        //
+        // Double up the screen to 3x its normal size. Implies -window.
+        //
+
+        if (M_CheckParm("-3")) 
+        {
+            SetScaleFactor(3);
+        }
+    #endif
 }
 
 // Check if we have been invoked as a screensaver by xscreensaver.
@@ -1154,13 +1178,15 @@ static void SetVideoMode(void)
     w = window_width;
     h = window_height;
 
-    // In windowed mode, the window can be resized while the game is
-    // running.
-    window_flags = SDL_WINDOW_RESIZABLE;
+    #ifndef SWITCH
+        // In windowed mode, the window can be resized while the game is
+        // running.
+        window_flags = SDL_WINDOW_RESIZABLE;
 
-    // Set the highdpi flag - this makes a big difference on Macs with
-    // retina displays, especially when using small window sizes.
-    window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+        // Set the highdpi flag - this makes a big difference on Macs with
+        // retina displays, especially when using small window sizes.
+        window_flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+    #endif
 
     if (fullscreen)
     {
@@ -1179,15 +1205,9 @@ static void SetVideoMode(void)
         }
     }
 
-#ifdef SWITCH
-	window_flags = SDL_WINDOW_FULLSCREEN;
-	x = 0;
-	y = 0;
-	w = 1280;
-    h = 720;
-#else	
-    I_GetWindowPosition(&x, &y, w, h);
-#endif
+    #ifndef SWITCH
+        I_GetWindowPosition(&x, &y, w, h);
+    #endif
 
     // Create window and renderer contexts. We set the window title
     // later anyway and leave the window position "undefined". If
@@ -1391,10 +1411,12 @@ void I_InitGraphics(void)
     // setting the screen mode, so that the game doesn't start immediately
     // with the player unable to see anything.
 
-    if (fullscreen && !screensaver_mode)
-    {
-        SDL_Delay(startup_delay);
-    }
+    #ifndef SWITCH
+        if (fullscreen && !screensaver_mode)
+        {
+            SDL_Delay(startup_delay);
+        }
+    #endif
 
     // The actual 320x200 canvas that we draw to. This is the pixel buffer of
     // the 8-bit paletted screen buffer that gets blit on an intermediate
@@ -1423,22 +1445,34 @@ void I_InitGraphics(void)
 // file system.
 void I_BindVideoVariables(void)
 {
-    M_BindIntVariable("use_mouse",                 &usemouse);
-    M_BindIntVariable("fullscreen",                &fullscreen);
-    M_BindIntVariable("video_display",             &video_display);
-    M_BindIntVariable("aspect_ratio_correct",      &aspect_ratio_correct);
-    M_BindIntVariable("integer_scaling",           &integer_scaling);
-    M_BindIntVariable("vga_porch_flash",           &vga_porch_flash);
-    M_BindIntVariable("startup_delay",             &startup_delay);
-    M_BindIntVariable("fullscreen_width",          &fullscreen_width);
-    M_BindIntVariable("fullscreen_height",         &fullscreen_height);
-    M_BindIntVariable("force_software_renderer",   &force_software_renderer);
-    M_BindIntVariable("max_scaling_buffer_pixels", &max_scaling_buffer_pixels);
-    M_BindIntVariable("window_width",              &window_width);
-    M_BindIntVariable("window_height",             &window_height);
-    M_BindIntVariable("grabmouse",                 &grabmouse);
-    M_BindStringVariable("video_driver",           &video_driver);
-    M_BindStringVariable("window_position",        &window_position);
-    M_BindIntVariable("usegamma",                  &usegamma);
-    M_BindIntVariable("png_screenshots",           &png_screenshots);
+    #ifdef SWITCH
+        M_BindIntVariable("use_mouse",                 &usemouse);
+        M_BindIntVariable("aspect_ratio_correct",      &aspect_ratio_correct);
+        M_BindIntVariable("integer_scaling",           &integer_scaling);
+        M_BindIntVariable("vga_porch_flash",           &vga_porch_flash);
+        M_BindIntVariable("force_software_renderer",   &force_software_renderer);
+        M_BindIntVariable("max_scaling_buffer_pixels", &max_scaling_buffer_pixels);
+        M_BindIntVariable("grabmouse",                 &grabmouse);
+        M_BindIntVariable("usegamma",                  &usegamma);
+        M_BindIntVariable("png_screenshots",           &png_screenshots);
+    #else
+        M_BindIntVariable("use_mouse",                 &usemouse);
+        M_BindIntVariable("fullscreen",                &fullscreen);
+        M_BindIntVariable("video_display",             &video_display);
+        M_BindIntVariable("aspect_ratio_correct",      &aspect_ratio_correct);
+        M_BindIntVariable("integer_scaling",           &integer_scaling);
+        M_BindIntVariable("vga_porch_flash",           &vga_porch_flash);
+        M_BindIntVariable("startup_delay",             &startup_delay);
+        M_BindIntVariable("fullscreen_width",          &fullscreen_width);
+        M_BindIntVariable("fullscreen_height",         &fullscreen_height);
+        M_BindIntVariable("force_software_renderer",   &force_software_renderer);
+        M_BindIntVariable("max_scaling_buffer_pixels", &max_scaling_buffer_pixels);
+        M_BindIntVariable("window_width",              &window_width);
+        M_BindIntVariable("window_height",             &window_height);
+        M_BindIntVariable("grabmouse",                 &grabmouse);
+        M_BindStringVariable("video_driver",           &video_driver);
+        M_BindStringVariable("window_position",        &window_position);
+        M_BindIntVariable("usegamma",                  &usegamma);
+        M_BindIntVariable("png_screenshots",           &png_screenshots);
+    #endif
 }
