@@ -62,6 +62,7 @@
 
 #include "m_menu.h"
 
+
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
 
@@ -637,7 +638,7 @@ void M_DoSave(int slot)
 static void SetDefaultSaveName(int slot)
 {
     M_snprintf(savegamestrings[itemOn], SAVESTRINGSIZE - 1,
-            "JOYSTICK SLOT %i", itemOn + 1);
+               "JOYSTICK SLOT %i", itemOn + 1);
     joypadSave = false;
 }
 

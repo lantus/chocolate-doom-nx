@@ -265,13 +265,8 @@ static int ReadButtonState(int vbutton)
     {
         return 0;
     }
-
-    int pressed = SDL_JoystickGetButton(joystick, physbutton);
-    if (pressed && vbutton >= 12 && vbutton <= 15) {
-        printf("Button Pressed: %d\n", vbutton);
-    }
 	 
-    return pressed;
+    return SDL_JoystickGetButton(joystick, physbutton);
 }
 
 // Get a bitmask of all currently-pressed buttons
