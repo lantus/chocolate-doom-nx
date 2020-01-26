@@ -25,6 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef SWITCH
+    #include <switch.h>
+    #include <unistd.h>
+#endif
+
 #include "config.h"
 #include "deh_main.h"
 #include "doomdef.h"
@@ -1228,6 +1233,21 @@ void D_DoomMain (void)
 
     DEH_printf("Z_Init: Init zone memory allocation daemon. \n");
     Z_Init ();
+
+#ifdef SWITCH
+    //
+    // Have the game go back to the launcher when it quits.
+    //
+
+    if (M_CheckParm("-launcher") > 0)
+    {
+        char cwd[PATH_MAX - 27];
+        char path[PATH_MAX];
+        getcwd(cwd, PATH_MAX - 27);
+        sprintf(path, "%s/ChocolateDoomLauncher.nro", cwd);
+        envSetNextLoad(path, path);
+    }
+#endif
 
     //!
     // @category net

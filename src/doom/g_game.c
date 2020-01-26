@@ -394,16 +394,27 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 	    cmd->angleturn += angleturn[tspeed]; 
     } 
  
-    if (gamekeydown[key_up]) 
-    {
-	// fprintf(stderr, "up\n");
-	forward += forwardmove[speed]; 
-    }
-    if (gamekeydown[key_down]) 
-    {
-	// fprintf(stderr, "down\n");
-	forward -= forwardmove[speed]; 
-    }
+    #ifdef SWITCH
+        if (gamekeydown[key_up] || joybuttons[joybforward]) 
+        {
+            forward += forwardmove[speed]; 
+        }
+        if (gamekeydown[key_down] || joybuttons[joybbackward]) 
+        {
+            forward -= forwardmove[speed]; 
+        }
+    #else
+        if (gamekeydown[key_up]) 
+        {
+            // fprintf(stderr, "up\n");
+            forward += forwardmove[speed]; 
+        }
+        if (gamekeydown[key_down]) 
+        {
+            // fprintf(stderr, "down\n");
+            forward -= forwardmove[speed]; 
+        }
+    #endif
 
     if (joyymove < 0) 
         forward += forwardmove[speed]; 

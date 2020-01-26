@@ -51,3 +51,11 @@ GPATH
 GRTAGS
 GTAGS
 /HTML/
+
+# Ignore Switch specific files
+exefs
+release/*.elf
+release/*.nacp
+release/*.nro
+release/*.nso
+release/*.pfs0

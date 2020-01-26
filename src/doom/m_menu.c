@@ -21,6 +21,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#ifdef SWITCH
+    #include <switch.h>
+#endif
 
 #include "doomdef.h"
 #include "doomkeys.h"
@@ -644,28 +647,56 @@ static void SetDefaultSaveName(int slot)
 //
 void M_SaveSelect(int choice)
 {
-    int x, y;
+    #ifdef SWITCH
+        SwkbdConfig config;
 
-    // we are going to be intercepting all chars
-    saveStringEnter = 1;
+        swkbdCreate(&config, 0);
 
-    // We need to turn on text input:
-    x = LoadDef.x - 11;
-    y = LoadDef.y + choice * LINEHEIGHT - 4;
-    I_StartTextInput(x, y, x + 8 + 24 * 8 + 8, y + LINEHEIGHT - 2);
-
-    saveSlot = choice;
-    M_StringCopy(saveOldString,savegamestrings[choice], SAVESTRINGSIZE);
-    if (!strcmp(savegamestrings[choice], EMPTYSTRING))
-    {
-        savegamestrings[choice][0] = 0;
-
-        if (joypadSave)
-        {
-            SetDefaultSaveName(choice);
+        swkbdConfigMakePresetDefault(&config);
+        swkbdConfigSetHeaderText(&config, "Save Game");
+        if (!strcmp(savegamestrings[choice], EMPTYSTRING)) {
+            swkbdConfigSetInitialText(&config, "");
+        } else {
+            swkbdConfigSetInitialText(&config, savegamestrings[choice]);
         }
-    }
-    saveCharIndex = strlen(savegamestrings[choice]);
+        swkbdConfigSetBlurBackground(&config, true);
+        swkbdConfigSetType(&config, SwkbdType_QWERTY);
+        swkbdConfigSetStringLenMax(&config, SAVESTRINGSIZE);
+        swkbdConfigSetStringLenMaxExt(&config, 1);
+        swkbdConfigSetKeySetDisableBitmask(&config, SwkbdKeyDisableBitmask_Percent | SwkbdKeyDisableBitmask_ForwardSlash | SwkbdKeyDisableBitmask_Backslash);
+
+         char buffer[SAVESTRINGSIZE] = { 0 };
+
+        if (R_SUCCEEDED(swkbdShow(&config, buffer, SAVESTRINGSIZE)) && strlen(buffer) != 0) {
+            strcpy(savegamestrings[choice], buffer);
+    		M_DoSave(choice);
+        }
+
+        swkbdClose(&config);
+    #else
+        int x, y;
+
+        // we are going to be intercepting all chars
+        saveStringEnter = 1;
+
+        // We need to turn on text input:
+        x = LoadDef.x - 11;
+        y = LoadDef.y + choice * LINEHEIGHT - 4;
+        I_StartTextInput(x, y, x + 8 + 24 * 8 + 8, y + LINEHEIGHT - 2);
+        
+        saveSlot = choice;
+        M_StringCopy(saveOldString,savegamestrings[choice], SAVESTRINGSIZE);
+        if (!strcmp(savegamestrings[choice], EMPTYSTRING))
+        {
+            savegamestrings[choice][0] = 0;
+
+            if (joypadSave)
+            {
+                SetDefaultSaveName(choice);
+            }
+        }
+        saveCharIndex = strlen(savegamestrings[choice]);
+    #endif
 }
 
 //
@@ -1385,30 +1416,65 @@ boolean M_Responder (event_t* ev)
     {
         // Simulate key presses from joystick events to interact with the menu.
 
-	if (ev->data3 < 0)
-	{
-	    key = key_menu_up;
-	    joywait = I_GetTime() + 5;
-	}
-	else if (ev->data3 > 0)
-	{
-	    key = key_menu_down;
-	    joywait = I_GetTime() + 5;
-	}
-		
-	if (ev->data2 < 0)
-	{
-	    key = key_menu_left;
-	    joywait = I_GetTime() + 2;
-	}
-	else if (ev->data2 > 0)
-	{
-	    key = key_menu_right;
-	    joywait = I_GetTime() + 2;
-	}
+        if (ev->data3 < 0)
+        {
+            key = key_menu_up;
+            joywait = I_GetTime() + 5;
+        }
+        else if (ev->data3 > 0)
+        {
+            key = key_menu_down;
+            joywait = I_GetTime() + 5;
+        }
 
-#define JOY_BUTTON_MAPPED(x) ((x) >= 0)
-#define JOY_BUTTON_PRESSED(x) (JOY_BUTTON_MAPPED(x) && (ev->data1 & (1 << (x))) != 0)
+        #ifdef SWITCH
+            if (ev->data4 < 0)
+            {
+                key = key_menu_left;
+                joywait = I_GetTime() + 2;
+            }
+            else if (ev->data4 > 0)
+            {
+                key = key_menu_right;
+                joywait = I_GetTime() + 2;
+            }
+        #else
+            if (ev->data2 < 0)
+            {
+                key = key_menu_left;
+                joywait = I_GetTime() + 2;
+            }
+            else if (ev->data2 > 0)
+            {
+                key = key_menu_right;
+                joywait = I_GetTime() + 2;
+            }
+        #endif
+
+        #define JOY_BUTTON_MAPPED(x) ((x) >= 0)
+        #define JOY_BUTTON_PRESSED(x) (JOY_BUTTON_MAPPED(x) && (ev->data1 & (1 << (x))) != 0)
+
+        #ifdef SWITCH
+            if (JOY_BUTTON_PRESSED(joybmenuup)) {
+                key = key_menu_up;
+                joywait = I_GetTime() + 5;
+            }
+
+            if (JOY_BUTTON_PRESSED(joybmenudown)) {
+                key = key_menu_down;
+                joywait = I_GetTime() + 5;
+            }
+
+            if (JOY_BUTTON_PRESSED(joybmenuleft)) {
+                key = key_menu_left;
+                joywait = I_GetTime() + 5;
+            }
+
+            if (JOY_BUTTON_PRESSED(joybmenuright)) {
+                key = key_menu_right;
+                joywait = I_GetTime() + 5;
+            }
+        #endif
 
         if (JOY_BUTTON_PRESSED(joybfire) || JOY_BUTTON_PRESSED(0))
         {
@@ -1433,6 +1499,7 @@ boolean M_Responder (event_t* ev)
             }
             joywait = I_GetTime() + 5;
         }
+
         if (JOY_BUTTON_PRESSED(joybuse))
         {
             // Simulate a 'N' keypress when Doom show a Y/N dialog with Use button.
@@ -1451,6 +1518,7 @@ boolean M_Responder (event_t* ev)
             }
             joywait = I_GetTime() + 5;
         }
+
         if (JOY_BUTTON_PRESSED(joybmenu) || JOY_BUTTON_PRESSED(11))
         {
             key = key_menu_activate;

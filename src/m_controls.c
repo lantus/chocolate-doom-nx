@@ -178,6 +178,15 @@ int key_menu_screenshot = 0;
 // Joystick controls
 //
 
+#ifdef SWITCH
+    int joybmenuup = -1;
+    int joybmenudown = -1;
+    int joybmenuleft = -1;
+    int joybmenuright = -1;
+    int joybforward = -1;
+    int joybbackward = -1;
+#endif
+
 int joybfire = 9;
 int joybstrafe = -1;
 int joybuse = 1;
@@ -219,6 +228,15 @@ void M_BindBaseControls(void)
     M_BindIntVariable("mouseb_fire",        &mousebfire);
     M_BindIntVariable("mouseb_strafe",      &mousebstrafe);
     M_BindIntVariable("mouseb_forward",     &mousebforward);
+
+    #ifdef SWITCH
+        M_BindIntVariable("joyb_menu_up",       &joybmenuup);
+        M_BindIntVariable("joyb_menu_down",     &joybmenudown);
+        M_BindIntVariable("joyb_menu_left",     &joybmenuleft);
+        M_BindIntVariable("joyb_menu_right",    &joybmenuright);
+        M_BindIntVariable("joyb_forward",       &joybforward);
+        M_BindIntVariable("joyb_backward",      &joybbackward);
+    #endif
 
     M_BindIntVariable("joyb_fire",          &joybfire);
     M_BindIntVariable("joyb_strafe",        &joybstrafe);
