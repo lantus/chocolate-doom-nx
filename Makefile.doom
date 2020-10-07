@@ -75,6 +75,7 @@ $(BIN): $(LINKOBJ)
 	$(LINK) $(LINKOBJ) -o "release/doom.elf" $(LIBS)
 
 obj/deh_str.o: $(GLOBALDEPS) src/deh_str.c
+	@mkdir -p obj 
 	$(CC) -c src/deh_str.c -o obj/deh_str.o $(CFLAGS)
 	
 obj/d_event.o: $(GLOBALDEPS) src/d_event.c
